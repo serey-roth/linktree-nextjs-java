@@ -1,0 +1,3 @@
+[submodule "linktree-web"]
+	path = linktree-web
+	url = https://github.com/serey-roth/linktree-web
