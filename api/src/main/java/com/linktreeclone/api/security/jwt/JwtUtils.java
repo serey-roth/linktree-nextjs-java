@@ -29,6 +29,7 @@ public class JwtUtils {
 
     private Key secretKey;
 
+    // Inject jwtExpirationMs and secretKey after instantiation
     public JwtUtils(
         @Value("${app.jwtSecret}") String jwtSecret,
         @Value("${app.jwtExpirationMs}") int jwtExpirationMs
