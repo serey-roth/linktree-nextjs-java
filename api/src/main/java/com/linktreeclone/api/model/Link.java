@@ -2,8 +2,10 @@ package com.linktreeclone.api.model;
 
 import java.util.Date;
 
+import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -39,11 +41,13 @@ public class Link {
     @NotBlank(message = "Url is mandatory!")
     private String url;
 
-    @Column
-    private Date createdOn;
+    @CreationTimestamp
+    @Column(name = "createdAt", updatable = false)
+    private Date createdAt;
 
-    @Column
-    private Date updatedOn;
+    @UpdateTimestamp
+    @Column(name = "updatedAt")
+    private Date updatedAt;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "creator_id")
@@ -51,17 +55,12 @@ public class Link {
     @JsonIgnore
     private User creator;
 
-    public Link() {
-        this.createdOn = new Date();
-        this.updatedOn = new Date();
-    }
+    public Link() {}
 
     public Link(String title, String url, String description) {
         this.title = title;
         this.url = url;
         this.description = description;
-        this.createdOn = new Date();
-        this.updatedOn = new Date();
     }
 
     public Long getId() {
@@ -82,17 +81,14 @@ public class Link {
 
     public void setTitle(String title) {
         this.title = title;
-        this.updatedOn = new Date();
     }
 
     public void setUrl(String url) {
         this.url = url;
-        this.updatedOn = new Date();
     }
 
     public void setDescription(String description) {
         this.description = description;
-        this.updatedOn = new Date();
     }
 
     public void setCreator(User creator) {
