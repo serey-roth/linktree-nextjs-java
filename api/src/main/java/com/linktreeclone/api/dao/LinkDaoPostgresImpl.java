@@ -33,8 +33,13 @@ public class LinkDaoPostgresImpl implements LinkDao {
 
     @Override
     public boolean deleteLinkById(Long id) {
-        linkRepository.deleteById(id);
-        return true;
+        boolean existedLink = linkRepository.existsById(id);
+        if (existedLink) {
+            linkRepository.deleteById(id);
+            return true;
+        } else {
+            return false;
+        }
     }
 
     @Override
@@ -48,7 +53,7 @@ public class LinkDaoPostgresImpl implements LinkDao {
             linkRepository.save(actuaLink);
             return Optional.of(actuaLink);
         } else {
-            return null;
+            return Optional.empty();
         }
     }
     
