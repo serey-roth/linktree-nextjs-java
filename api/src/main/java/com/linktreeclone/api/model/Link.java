@@ -9,6 +9,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -57,7 +58,10 @@ public class Link {
 
     public Link() {}
 
-    public Link(String title, String url, String description) {
+    public Link(
+        @JsonProperty("title") String title, 
+        @JsonProperty("url") String url, 
+        @JsonProperty("description") String description) {
         this.title = title;
         this.url = url;
         this.description = description;
