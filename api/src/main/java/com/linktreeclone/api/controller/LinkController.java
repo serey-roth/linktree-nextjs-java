@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.linktreeclone.api.exception.LinkNotFoundException;
 import com.linktreeclone.api.model.Link;
 import com.linktreeclone.api.model.User;
 import com.linktreeclone.api.repository.UserRepository;
@@ -25,7 +26,7 @@ import com.linktreeclone.api.service.LinkService;
 import jakarta.validation.Valid;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/secure")
 public class LinkController {
     
     @Autowired
@@ -65,11 +66,36 @@ public class LinkController {
         }
     }
 
+    @GetMapping(path = "/link/{id}")
+    public ResponseEntity<Link> getLinkById(
+        @PathVariable("id") Long id
+    ) {
+        Optional<Link> link = linkService.selectLinkById(id);
+        if (link.isPresent()) {
+            return new ResponseEntity<Link>(
+                link.get(), 
+                HttpStatus.OK
+            );
+        } else {
+            throw new LinkNotFoundException(
+                "No link found with id: " + id,
+                "Requested link cannot be found! Please enter a valid id!"
+            );
+        }
+    }
+
     @DeleteMapping(path = "/link/{id}")
     public boolean deleteLink(
         @PathVariable("id") Long id
     ) {
-        return linkService.deleteLinkById(id);
+        boolean isDeleted = linkService.deleteLinkById(id);
+        if (!isDeleted) {
+            throw new LinkNotFoundException(
+                "No link found with id: " + id,
+                "Link cannot be deleted due to invalid id. Please enter a valid id!"
+            );
+        }
+        return isDeleted;
     }
 
     @PutMapping(path = "/link/{id}")
@@ -84,9 +110,9 @@ public class LinkController {
                 HttpStatus.OK
             );
         } else {
-            return new ResponseEntity<>(
-                null,
-                HttpStatus.NOT_FOUND
+            throw new LinkNotFoundException(
+                "No link found with id: " + id,
+                "Link cannot be updated due to invalid id. Please enter a valid id!"
             );
         }
     }
