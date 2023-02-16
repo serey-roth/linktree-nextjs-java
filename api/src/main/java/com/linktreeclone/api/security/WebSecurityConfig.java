@@ -65,14 +65,18 @@ public class WebSecurityConfig {
             .and()
             .csrf()
             .disable()
-            .authorizeHttpRequests()
-                .requestMatchers("/api/auth/**").permitAll()
-            .anyRequest()
-                .authenticated()
-            .and().exceptionHandling()
+            .exceptionHandling()
                 .authenticationEntryPoint(authEntryPointJwt)
             .and().sessionManagement()
-            .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+            .and()
+            .authorizeHttpRequests()
+                .requestMatchers("/api/auth/**")
+                .permitAll()
+            .and()
+            .authorizeHttpRequests()
+                .requestMatchers("/api/secure/**")
+                .authenticated();
             
         
         http.authenticationProvider(authenticationProvider());
