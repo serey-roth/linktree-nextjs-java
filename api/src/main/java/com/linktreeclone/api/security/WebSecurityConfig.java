@@ -1,6 +1,7 @@
 package com.linktreeclone.api.security;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -25,8 +26,13 @@ public class WebSecurityConfig {
     @Autowired
     UserDetailsService userDetailsService;
 
-    @Autowired
-    private AuthEntryPointJwt unauthorizedHandler;
+    private AuthEntryPointJwt authEntryPointJwt;
+
+    public WebSecurityConfig(
+        @Qualifier("authEntryPointJwt") AuthEntryPointJwt authEntryPointJwt
+    ) {
+        this.authEntryPointJwt = authEntryPointJwt;
+    }
 
     @Bean
     public AuthTokenFilter authenticationJwtTokenFilter() {
@@ -55,11 +61,19 @@ public class WebSecurityConfig {
     
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http.cors().and().csrf().disable()
-            .exceptionHandling().authenticationEntryPoint(unauthorizedHandler).and()
-            .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
-            .authorizeHttpRequests().requestMatchers("/api/auth/**").permitAll()
-            .anyRequest().authenticated();
+        http.cors()
+            .and()
+            .csrf()
+            .disable()
+            .authorizeHttpRequests()
+                .requestMatchers("/api/auth/**").permitAll()
+            .anyRequest()
+                .authenticated()
+            .and().exceptionHandling()
+                .authenticationEntryPoint(authEntryPointJwt)
+            .and().sessionManagement()
+            .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+            
         
         http.authenticationProvider(authenticationProvider());
 
