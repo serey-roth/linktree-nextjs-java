@@ -9,7 +9,7 @@ import com.linktreeclone.api.model.Link;
 import jakarta.transaction.Transactional;
 
 public interface LinkRepository extends JpaRepository<Link, Long>  {
-    List<Link> findByCreatorId(Long creatorId);
+    List<Link> findAllByCreatorId(Long creatorId);
 
     @Transactional
     void deleteByCreatorId(Long creatorId);
