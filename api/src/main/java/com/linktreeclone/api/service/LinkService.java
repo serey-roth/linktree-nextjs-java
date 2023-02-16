@@ -16,7 +16,7 @@ public class LinkService {
     @Autowired
     private final LinkDao linkDao;
 
-    public LinkService(@Qualifier("postgres-link") LinkDao linkDao) {
+    public LinkService(@Qualifier("postgres") LinkDao linkDao) {
         this.linkDao = linkDao;
     }
 
