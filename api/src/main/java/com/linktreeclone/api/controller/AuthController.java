@@ -18,6 +18,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.linktreeclone.api.exception.CredentialsTakenException;
+import com.linktreeclone.api.exception.NotFoundException;
 import com.linktreeclone.api.model.ERole;
 import com.linktreeclone.api.model.Role;
 import com.linktreeclone.api.model.User;
@@ -32,7 +34,7 @@ import com.linktreeclone.api.security.service.UserDetailsImpl;
 
 import jakarta.validation.Valid;
 
-@CrossOrigin(origins = "*")
+@CrossOrigin(origins = "http://localhost:3000")
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
@@ -79,19 +81,17 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-	public ResponseEntity<?> registerUser(@Valid @RequestBody RegisterRequest registerRequest) {
+	public ResponseEntity<?> registerUser(
+		@Valid @RequestBody RegisterRequest registerRequest
+	) throws CredentialsTakenException {
 		if (userRepository.existsByUsername(registerRequest.getUsername())) {
-			return ResponseEntity
-					.badRequest()
-					.body(new MessageResponse("Error: Username is already taken!"));
+			throw new CredentialsTakenException("Credentials taken!", "Username is already taken!");
 		}
 
 		if (userRepository.existsByEmail(registerRequest.getEmail())) {
-			return ResponseEntity
-					.badRequest()
-					.body(new MessageResponse("Error: Email is already in use!"));
+			throw new CredentialsTakenException("Credentials taken!", "Email is already taken!");
 		}
-
+		
 		// Create new user's account
 		User user = new User(
             registerRequest.getUsername(), 
