@@ -15,15 +15,33 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 @RestController
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     
-    @ExceptionHandler(LinkNotFoundException.class)
-    public ResponseEntity<ApiErrorResponse> handleLinkNotFoundException(
-        LinkNotFoundException e,
+    @ExceptionHandler(NotFoundException.class)
+    public ResponseEntity<ApiErrorResponse> handleNotFoundException(
+        NotFoundException e,
         WebRequest request
     ) throws Exception {
         try {
             ApiErrorResponse errorResponse = new ApiErrorResponse(
                 HttpStatus.NOT_FOUND,
                 "404",
+                e.getMessage(),
+                e.getDetails()
+            );
+            return new ResponseEntity<ApiErrorResponse>(errorResponse, HttpStatus.NOT_FOUND);
+        } catch (Exception ex) {
+            throw ex;
+        }
+    }
+
+    @ExceptionHandler(CredentialsTakenException.class)
+    public ResponseEntity<ApiErrorResponse> handleCredentialsTakenException(
+        CredentialsTakenException e,
+        WebRequest request
+    ) throws Exception {
+        try {
+            ApiErrorResponse errorResponse = new ApiErrorResponse(
+                HttpStatus.BAD_REQUEST,
+                "400",
                 e.getMessage(),
                 e.getDetails()
             );
