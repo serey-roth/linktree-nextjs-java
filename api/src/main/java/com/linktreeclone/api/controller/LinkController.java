@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.linktreeclone.api.exception.LinkNotFoundException;
+import com.linktreeclone.api.exception.NotFoundException;
 import com.linktreeclone.api.model.Link;
 import com.linktreeclone.api.model.User;
 import com.linktreeclone.api.repository.UserRepository;
@@ -77,7 +77,7 @@ public class LinkController {
                 HttpStatus.OK
             );
         } else {
-            throw new LinkNotFoundException(
+            throw new NotFoundException(
                 "No link found with id: " + id,
                 "Requested link cannot be found! Please enter a valid id!"
             );
@@ -90,7 +90,7 @@ public class LinkController {
     ) {
         boolean isDeleted = linkService.deleteLinkById(id);
         if (!isDeleted) {
-            throw new LinkNotFoundException(
+            throw new NotFoundException(
                 "No link found with id: " + id,
                 "Link cannot be deleted due to invalid id. Please enter a valid id!"
             );
@@ -110,7 +110,7 @@ public class LinkController {
                 HttpStatus.OK
             );
         } else {
-            throw new LinkNotFoundException(
+            throw new NotFoundException(
                 "No link found with id: " + id,
                 "Link cannot be updated due to invalid id. Please enter a valid id!"
             );
