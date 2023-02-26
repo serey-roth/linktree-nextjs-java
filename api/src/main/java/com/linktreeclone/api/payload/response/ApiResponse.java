@@ -2,20 +2,20 @@ package com.linktreeclone.api.payload.response;
 
 import com.linktreeclone.api.exception.ApiErrorResponse;
 
-public class ApiResponse {
+public class ApiResponse<T> {
     
-    private JwtResponse user;
+    private T user;
 
     private ApiErrorResponse error;
 
     public ApiResponse() {}
 
-    public ApiResponse(JwtResponse user, ApiErrorResponse error) {
+    public ApiResponse(T user, ApiErrorResponse error) {
         this.user = user;
         this.error = error;
     } 
 
-    public JwtResponse getUser() {
+    public T getUser() {
         return this.user;
     }
 
@@ -23,7 +23,7 @@ public class ApiResponse {
         return this.error;
     }
 
-    public void setUser(JwtResponse user) {
+    public void setUser(T user) {
         this.user = user;
     }
 
