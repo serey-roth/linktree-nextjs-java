@@ -129,7 +129,7 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-	public ResponseEntity<MessageResponse> registerUser(
+	public ResponseEntity<ApiResponse<MessageResponse>> registerUser(
 		@Valid @RequestBody RegisterRequest registerRequest
 	) throws CredentialsTakenException {
 		if (userRepository.existsByUsername(registerRequest.getUsername())) {
@@ -173,8 +173,11 @@ public class AuthController {
 		user.setRoles(roles);
 		userRepository.save(user);
 
-		return new ResponseEntity<MessageResponse>(
-			new MessageResponse("User registered successfully!"),
+		return new ResponseEntity<ApiResponse<MessageResponse>>(
+			new ApiResponse<MessageResponse>(
+				new MessageResponse("User registered successfully!"),
+				null
+			),
 			HttpStatus.OK
 		);
 	}
