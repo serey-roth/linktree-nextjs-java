@@ -11,6 +11,7 @@ import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import com.linktreeclone.api.payload.response.ApiResponse;
+import com.linktreeclone.api.payload.response.JwtResponse;
 
 @Order(Ordered.HIGHEST_PRECEDENCE)
 @ControllerAdvice
@@ -18,7 +19,7 @@ import com.linktreeclone.api.payload.response.ApiResponse;
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     
     @ExceptionHandler(NotFoundException.class)
-    public ResponseEntity<ApiResponse> handleNotFoundException(
+    public ResponseEntity<ApiResponse<JwtResponse>> handleNotFoundException(
         NotFoundException e,
         WebRequest request
     ) throws Exception {
@@ -29,8 +30,8 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                 e.getMessage(),
                 e.getDetails()
             );
-            return new ResponseEntity<ApiResponse>(
-                new ApiResponse(
+            return new ResponseEntity<ApiResponse<JwtResponse>>(
+                new ApiResponse<JwtResponse>(
                     null, 
                     errorResponse
                 ), HttpStatus.OK
@@ -41,7 +42,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     @ExceptionHandler(CredentialsTakenException.class)
-    public ResponseEntity<ApiResponse> handleCredentialsTakenException(
+    public ResponseEntity<ApiResponse<JwtResponse>> handleCredentialsTakenException(
         CredentialsTakenException e,
         WebRequest request
     ) throws Exception {
@@ -52,8 +53,8 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                 e.getMessage(),
                 e.getDetails()
             );
-            return new ResponseEntity<ApiResponse>(
-                new ApiResponse(
+            return new ResponseEntity<ApiResponse<JwtResponse>>(
+                new ApiResponse<JwtResponse>(
                     null, 
                     errorResponse
                 ), HttpStatus.OK
