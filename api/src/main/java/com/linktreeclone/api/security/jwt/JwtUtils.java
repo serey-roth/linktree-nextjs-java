@@ -9,8 +9,10 @@ import javax.crypto.spec.SecretKeySpec;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseCookie;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
+import org.springframework.web.util.WebUtils;
 
 import com.linktreeclone.api.security.service.UserDetailsImpl;
 
@@ -20,6 +22,8 @@ import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.UnsupportedJwtException;
 import io.jsonwebtoken.security.SignatureException;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 
 @Component
 public class JwtUtils {
@@ -27,17 +31,41 @@ public class JwtUtils {
 
     private int jwtExpirationMs;
 
+    private String jwtCookieName;
+
     private Key secretKey;
 
     // Inject jwtExpirationMs and secretKey after instantiation
     public JwtUtils(
         @Value("${app.jwtSecret}") String jwtSecret,
-        @Value("${app.jwtExpirationMs}") int jwtExpirationMs
+        @Value("${app.jwtExpirationMs}") int jwtExpirationMs,
+        @Value("${app.jwtCookieName}") String jwtCookieName
     ) {
         this.jwtExpirationMs = jwtExpirationMs;
+        this.jwtCookieName = jwtCookieName;
         this.secretKey = new SecretKeySpec(
             Base64.getDecoder().decode(jwtSecret), 
             SignatureAlgorithm.HS512.getJcaName());
+    }
+
+    public String getJwtFromCookies(HttpServletRequest request) {
+        Cookie cookie = WebUtils.getCookie(request, jwtCookieName);
+        if (cookie != null) {
+            return cookie.getValue();
+        } else {
+            return null;
+        }
+    }
+
+    public ResponseCookie generateJwtCookie(Authentication auth) {
+        String jwt = generateJwtToken(auth);
+        ResponseCookie cookie = ResponseCookie.from(jwtCookieName, jwt).path("/").maxAge(60 * 60 * 24 * 365).build();
+        return cookie;
+    }
+
+    public ResponseCookie getCleanJwtCookie() {
+        ResponseCookie cookie = ResponseCookie.from(jwtCookieName, null).path("/").build();
+        return cookie;
     }
 
     public String generateJwtToken(Authentication auth) {
