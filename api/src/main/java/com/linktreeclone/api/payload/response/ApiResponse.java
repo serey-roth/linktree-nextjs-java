@@ -4,27 +4,27 @@ import com.linktreeclone.api.exception.ApiErrorResponse;
 
 public class ApiResponse<T> {
     
-    private T user;
+    private T data;
 
     private ApiErrorResponse error;
 
     public ApiResponse() {}
 
-    public ApiResponse(T user, ApiErrorResponse error) {
-        this.user = user;
+    public ApiResponse(T data, ApiErrorResponse error) {
+        this.data = data;
         this.error = error;
     } 
 
-    public T getUser() {
-        return this.user;
+    public T getData() {
+        return this.data;
     }
 
     public ApiErrorResponse getError() {
         return this.error;
     }
 
-    public void setUser(T user) {
-        this.user = user;
+    public void setData(T data) {
+        this.data = data;
     }
 
     public void setError(ApiErrorResponse error) {
