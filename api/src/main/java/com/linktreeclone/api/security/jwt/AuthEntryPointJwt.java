@@ -15,6 +15,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.linktreeclone.api.exception.ApiErrorResponse;
+import com.linktreeclone.api.payload.response.ApiResponse;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -47,14 +48,14 @@ public class AuthEntryPointJwt implements AuthenticationEntryPoint {
         AuthenticationException authException) throws IOException, ServletException {
         logger.error("Unauthorized error: {}", authException.getMessage());
         try {
-            ApiErrorResponse errorResponse = createErrorReponse(authException);
-            response.setStatus(errorResponse.getHttpStatus().value());
+            ApiResponse res = new ApiResponse(null, createErrorReponse(authException));
+            response.setStatus(HttpStatus.OK.value());
             response.setContentType("application/json");
             response.setCharacterEncoding("UTF-8");
             ObjectMapper mapper = new ObjectMapper();
             mapper.registerModule(new JavaTimeModule());
             mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, true);
-            mapper.writeValue(response.getOutputStream(), errorResponse);
+            mapper.writeValue(response.getOutputStream(), res);
         } catch (Exception ex) {
             throw ex;
         }

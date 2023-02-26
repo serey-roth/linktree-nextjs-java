@@ -10,13 +10,15 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
+import com.linktreeclone.api.payload.response.ApiResponse;
+
 @Order(Ordered.HIGHEST_PRECEDENCE)
 @ControllerAdvice
 @RestController
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     
     @ExceptionHandler(NotFoundException.class)
-    public ResponseEntity<ApiErrorResponse> handleNotFoundException(
+    public ResponseEntity<ApiResponse> handleNotFoundException(
         NotFoundException e,
         WebRequest request
     ) throws Exception {
@@ -27,14 +29,19 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                 e.getMessage(),
                 e.getDetails()
             );
-            return new ResponseEntity<ApiErrorResponse>(errorResponse, HttpStatus.NOT_FOUND);
+            return new ResponseEntity<ApiResponse>(
+                new ApiResponse(
+                    null, 
+                    errorResponse
+                ), HttpStatus.OK
+            );
         } catch (Exception ex) {
             throw ex;
         }
     }
 
     @ExceptionHandler(CredentialsTakenException.class)
-    public ResponseEntity<ApiErrorResponse> handleCredentialsTakenException(
+    public ResponseEntity<ApiResponse> handleCredentialsTakenException(
         CredentialsTakenException e,
         WebRequest request
     ) throws Exception {
@@ -45,7 +52,12 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                 e.getMessage(),
                 e.getDetails()
             );
-            return new ResponseEntity<ApiErrorResponse>(errorResponse, HttpStatus.NOT_FOUND);
+            return new ResponseEntity<ApiResponse>(
+                new ApiResponse(
+                    null, 
+                    errorResponse
+                ), HttpStatus.OK
+            );
         } catch (Exception ex) {
             throw ex;
         }

@@ -6,6 +6,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -19,12 +20,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.linktreeclone.api.exception.CredentialsTakenException;
-import com.linktreeclone.api.exception.NotFoundException;
 import com.linktreeclone.api.model.ERole;
 import com.linktreeclone.api.model.Role;
 import com.linktreeclone.api.model.User;
 import com.linktreeclone.api.payload.request.AuthRequest;
 import com.linktreeclone.api.payload.request.RegisterRequest;
+import com.linktreeclone.api.payload.response.ApiResponse;
 import com.linktreeclone.api.payload.response.JwtResponse;
 import com.linktreeclone.api.payload.response.MessageResponse;
 import com.linktreeclone.api.repository.RoleRepository;
@@ -55,7 +56,7 @@ public class AuthController {
     JwtUtils jwtUtils;
 
     @PostMapping("/login")
-    public ResponseEntity<?> loginUser(@Valid @RequestBody AuthRequest loginRequest) {
+    public ResponseEntity<ApiResponse> loginUser(@Valid @RequestBody AuthRequest loginRequest) {
         Authentication auth = authManager.authenticate(
             new UsernamePasswordAuthenticationToken(
                 loginRequest.getUsername(), 
@@ -70,18 +71,22 @@ public class AuthController {
 				.map(item -> item.getAuthority())
 				.collect(Collectors.toList());
 
-		return ResponseEntity.ok(
-            new JwtResponse(
-                jwt, 
-                userDetails.getId(), 
-                userDetails.getUsername(), 
-                userDetails.getEmail(), 
-                roles
-            ));
+		return new ResponseEntity<ApiResponse>(
+			new ApiResponse(
+				new JwtResponse(
+					jwt, 
+					userDetails.getId(), 
+					userDetails.getUsername(), 
+					userDetails.getEmail(), 
+					roles
+            	), null
+			),
+			HttpStatus.OK
+		);
     }
 
     @PostMapping("/register")
-	public ResponseEntity<?> registerUser(
+	public ResponseEntity<MessageResponse> registerUser(
 		@Valid @RequestBody RegisterRequest registerRequest
 	) throws CredentialsTakenException {
 		if (userRepository.existsByUsername(registerRequest.getUsername())) {
@@ -125,7 +130,10 @@ public class AuthController {
 		user.setRoles(roles);
 		userRepository.save(user);
 
-		return ResponseEntity.ok(new MessageResponse("User registered successfully!"));
+		return new ResponseEntity<MessageResponse>(
+			new MessageResponse("User registered successfully!"),
+			HttpStatus.OK
+		);
 	}
 
 }
