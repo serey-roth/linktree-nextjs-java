@@ -2,6 +2,7 @@ package com.linktreeclone.api.controller;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -14,12 +15,15 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.linktreeclone.api.exception.CredentialsTakenException;
+import com.linktreeclone.api.exception.NotFoundException;
 import com.linktreeclone.api.model.ERole;
 import com.linktreeclone.api.model.Role;
 import com.linktreeclone.api.model.User;
@@ -28,12 +32,14 @@ import com.linktreeclone.api.payload.request.RegisterRequest;
 import com.linktreeclone.api.payload.response.ApiResponse;
 import com.linktreeclone.api.payload.response.JwtResponse;
 import com.linktreeclone.api.payload.response.MessageResponse;
+import com.linktreeclone.api.payload.response.UserResponse;
 import com.linktreeclone.api.repository.RoleRepository;
 import com.linktreeclone.api.repository.UserRepository;
 import com.linktreeclone.api.security.jwt.JwtUtils;
 import com.linktreeclone.api.security.service.UserDetailsImpl;
 
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 
 @CrossOrigin(origins = "http://localhost:3000")
 @RestController
@@ -55,8 +61,45 @@ public class AuthController {
     @Autowired
     JwtUtils jwtUtils;
 
+	@GetMapping("/me")
+	public ResponseEntity<ApiResponse<UserResponse>> me(
+		@Valid @NotNull @RequestHeader("Authorization") String bearerToken
+	) throws RuntimeException {
+		String token = bearerToken.substring(7);
+
+		boolean isValid = jwtUtils.validateJwtToken(token);
+
+		if (isValid) {
+			String username = jwtUtils.getUsernameFromJwtToken(token);
+			Optional<User> existingUser = userRepository.findByUsername(username);
+			if (existingUser.isPresent()) {
+				User user = existingUser.get();
+				List<String> roles = user.getRoles()
+					.stream()
+					.map(role -> role.getName().toString())
+					.toList();
+				return new ResponseEntity<ApiResponse<UserResponse>>(
+					new ApiResponse<UserResponse>(
+						new UserResponse(
+							user.getId(), 
+							user.getUsername(),
+							user.getEmail(),
+							roles
+						), 
+						null
+					), 
+					HttpStatus.OK
+				);
+			} else {
+				throw new NotFoundException("User not found!", "User cannot be found with given jwt token!");
+			}
+		}
+		 
+		throw new RuntimeException("Invalid token!");
+	}
+
     @PostMapping("/login")
-    public ResponseEntity<ApiResponse> loginUser(@Valid @RequestBody AuthRequest loginRequest) {
+    public ResponseEntity<ApiResponse<JwtResponse>> loginUser(@Valid @RequestBody AuthRequest loginRequest) {
         Authentication auth = authManager.authenticate(
             new UsernamePasswordAuthenticationToken(
                 loginRequest.getUsername(), 
@@ -71,8 +114,8 @@ public class AuthController {
 				.map(item -> item.getAuthority())
 				.collect(Collectors.toList());
 
-		return new ResponseEntity<ApiResponse>(
-			new ApiResponse(
+		return new ResponseEntity<ApiResponse<JwtResponse>>(
+			new ApiResponse<JwtResponse>(
 				new JwtResponse(
 					jwt, 
 					userDetails.getId(), 
