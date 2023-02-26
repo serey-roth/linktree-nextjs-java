@@ -7,7 +7,9 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -30,7 +32,6 @@ import com.linktreeclone.api.model.User;
 import com.linktreeclone.api.payload.request.AuthRequest;
 import com.linktreeclone.api.payload.request.RegisterRequest;
 import com.linktreeclone.api.payload.response.ApiResponse;
-import com.linktreeclone.api.payload.response.JwtResponse;
 import com.linktreeclone.api.payload.response.MessageResponse;
 import com.linktreeclone.api.payload.response.UserResponse;
 import com.linktreeclone.api.repository.RoleRepository;
@@ -41,7 +42,7 @@ import com.linktreeclone.api.security.service.UserDetailsImpl;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 
-@CrossOrigin(origins = "http://localhost:3000")
+@CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true")
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
@@ -99,7 +100,7 @@ public class AuthController {
 	}
 
     @PostMapping("/login")
-    public ResponseEntity<ApiResponse<JwtResponse>> loginUser(@Valid @RequestBody AuthRequest loginRequest) {
+    public ResponseEntity<ApiResponse<UserResponse>> loginUser(@Valid @RequestBody AuthRequest loginRequest) {
         Authentication auth = authManager.authenticate(
             new UsernamePasswordAuthenticationToken(
                 loginRequest.getUsername(), 
@@ -107,25 +108,25 @@ public class AuthController {
         );
 
         SecurityContextHolder.getContext().setAuthentication(auth);
-		String jwt = jwtUtils.generateJwtToken(auth);
 		
-		UserDetailsImpl userDetails = (UserDetailsImpl) auth.getPrincipal();		
+		UserDetailsImpl userDetails = (UserDetailsImpl) auth.getPrincipal();
+		
+		ResponseCookie jwtCookie = jwtUtils.generateJwtCookie(auth);
+
 		List<String> roles = userDetails.getAuthorities().stream()
 				.map(item -> item.getAuthority())
 				.collect(Collectors.toList());
 
-		return new ResponseEntity<ApiResponse<JwtResponse>>(
-			new ApiResponse<JwtResponse>(
-				new JwtResponse(
-					jwt, 
-					userDetails.getId(), 
-					userDetails.getUsername(), 
-					userDetails.getEmail(), 
-					roles
-            	), null
-			),
-			HttpStatus.OK
-		);
+		return ResponseEntity.ok()
+		.header(HttpHeaders.SET_COOKIE, jwtCookie.toString())
+		.body(new ApiResponse<UserResponse>(
+			new UserResponse(
+				userDetails.getId(), 
+				userDetails.getUsername(), 
+				userDetails.getEmail(), 
+				roles
+			), null
+		));
     }
 
     @PostMapping("/register")
@@ -182,4 +183,14 @@ public class AuthController {
 		);
 	}
 
+	@PostMapping("/logout")
+	public ResponseEntity<ApiResponse<MessageResponse>> logout() {
+		ResponseCookie cookie = jwtUtils.getCleanJwtCookie();
+		return ResponseEntity.ok()
+		.header(HttpHeaders.SET_COOKIE, cookie.toString())
+		.body(new ApiResponse<MessageResponse>(
+			new MessageResponse("You've been loggged out!"), 
+			null
+		));
+	}
 }
