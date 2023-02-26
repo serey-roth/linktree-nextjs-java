@@ -2,6 +2,8 @@ package com.linktreeclone.api.payload.request;
 
 import java.util.Set;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 
@@ -14,7 +16,11 @@ public class RegisterRequest extends AuthRequest {
     
     public RegisterRequest() {}
 
-    public RegisterRequest(String email, String username, String password) {
+    public RegisterRequest(
+        @JsonProperty("email") String email, 
+        @JsonProperty("username") String username, 
+        @JsonProperty("password") String password
+    ) {
         super(username, password);
         this.email = email;
     }
