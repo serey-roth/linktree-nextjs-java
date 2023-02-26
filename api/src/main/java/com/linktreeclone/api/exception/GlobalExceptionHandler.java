@@ -12,7 +12,7 @@ import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import com.linktreeclone.api.payload.response.ApiResponse;
-import com.linktreeclone.api.payload.response.JwtResponse;
+import com.linktreeclone.api.payload.response.UserResponse;
 
 @Order(Ordered.HIGHEST_PRECEDENCE)
 @ControllerAdvice
@@ -20,7 +20,7 @@ import com.linktreeclone.api.payload.response.JwtResponse;
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     
     @ExceptionHandler(NotFoundException.class)
-    public ResponseEntity<ApiResponse<JwtResponse>> handleNotFoundException(
+    public ResponseEntity<ApiResponse<UserResponse>> handleNotFoundException(
         NotFoundException e,
         WebRequest request
     ) throws Exception {
@@ -31,8 +31,8 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                 e.getMessage(),
                 e.getDetails()
             );
-            return new ResponseEntity<ApiResponse<JwtResponse>>(
-                new ApiResponse<JwtResponse>(
+            return new ResponseEntity<ApiResponse<UserResponse>>(
+                new ApiResponse<UserResponse>(
                     null, 
                     errorResponse
                 ), HttpStatus.OK
@@ -43,7 +43,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     @ExceptionHandler(CredentialsTakenException.class)
-    public ResponseEntity<ApiResponse<JwtResponse>> handleCredentialsTakenException(
+    public ResponseEntity<ApiResponse<UserResponse>> handleCredentialsTakenException(
         CredentialsTakenException e,
         WebRequest request
     ) throws Exception {
@@ -54,8 +54,8 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                 e.getMessage(),
                 e.getDetails()
             );
-            return new ResponseEntity<ApiResponse<JwtResponse>>(
-                new ApiResponse<JwtResponse>(
+            return new ResponseEntity<ApiResponse<UserResponse>>(
+                new ApiResponse<UserResponse>(
                     null, 
                     errorResponse
                 ), HttpStatus.OK
@@ -66,7 +66,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     @ExceptionHandler(MissingRequestHeaderException.class)
-    public ResponseEntity<ApiResponse<JwtResponse>> handleMissingRequestHeaderException(
+    public ResponseEntity<ApiResponse<UserResponse>> handleMissingRequestHeaderException(
         MissingRequestHeaderException e,
         WebRequest request
     ) throws Exception {
@@ -77,8 +77,8 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                 e.getMessage(),
                 e.getBody().getDetail()
             );
-            return new ResponseEntity<ApiResponse<JwtResponse>>(
-                new ApiResponse<JwtResponse>(
+            return new ResponseEntity<ApiResponse<UserResponse>>(
+                new ApiResponse<UserResponse>(
                     null, 
                     errorResponse
                 ), HttpStatus.OK
