@@ -6,7 +6,7 @@ import java.util.List;
 import org.springframework.http.HttpStatus;
 
 public class MultipleErrorResponse extends ErrorResponse {
-    private List<String> errors;
+    private List<FieldError> errors;
 
     public MultipleErrorResponse() {
         super();
@@ -18,17 +18,17 @@ public class MultipleErrorResponse extends ErrorResponse {
         String errorCode,
         String message,
         String details,
-        List<String> errors
+        List<FieldError> errors
     ) {
         super(status, errorCode, message, details);
         this.errors = errors;
     }
 
-    public List<String> getErrors() {
+    public List<FieldError> getErrors() {
         return this.errors;
     }
 
-    public void setErrors(List<String> errors) {
+    public void setErrors(List<FieldError> errors) {
         this.errors = errors;
     }
 }
