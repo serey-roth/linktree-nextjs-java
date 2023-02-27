@@ -9,7 +9,7 @@ import jakarta.validation.constraints.NotBlank;
 
 public class RegisterRequest extends AuthRequest {
     @NotBlank(message = "Email is mandatory!")
-    @Email(message = "Please enter a valid email address!")
+    @Email(message = "Email is invalid!")
     private String email;
 
     private Set<String> roles;
