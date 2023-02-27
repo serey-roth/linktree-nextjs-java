@@ -19,6 +19,7 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 
 import com.linktreeclone.api.payload.response.ApiResponse;
 import com.linktreeclone.api.payload.response.ErrorResponse;
+import com.linktreeclone.api.payload.response.FieldError;
 import com.linktreeclone.api.payload.response.MultipleErrorResponse;
 import com.linktreeclone.api.payload.response.UserResponse;
 
@@ -103,11 +104,16 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         HttpStatusCode status, 
         WebRequest request
     )  {
-        List<String> errorList = ex
+        List<FieldError> errorList = ex
                 .getBindingResult()
                 .getFieldErrors()
                 .stream()
-                .map(fieldError -> fieldError.getDefaultMessage())
+                .map(e -> {
+                    FieldError error = new FieldError(
+                        e.getField(), 
+                        e.getDefaultMessage());
+                    return error;
+                })
                 .collect(Collectors.toList());
 
         MultipleErrorResponse errorResponse = new MultipleErrorResponse(
@@ -123,6 +129,6 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
             errorResponse
         );
 
-        return handleExceptionInternal(ex, response, headers, errorResponse.getHttpStatus(), request);
+        return handleExceptionInternal(ex, response, headers, HttpStatus.OK, request);
     }
 }
