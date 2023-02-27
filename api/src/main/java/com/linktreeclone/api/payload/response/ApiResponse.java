@@ -1,16 +1,14 @@
 package com.linktreeclone.api.payload.response;
 
-import com.linktreeclone.api.exception.ApiErrorResponse;
-
 public class ApiResponse<T> {
     
     private T data;
 
-    private ApiErrorResponse error;
+    private ErrorResponse error;
 
     public ApiResponse() {}
 
-    public ApiResponse(T data, ApiErrorResponse error) {
+    public ApiResponse(T data, ErrorResponse error) {
         this.data = data;
         this.error = error;
     } 
@@ -19,7 +17,7 @@ public class ApiResponse<T> {
         return this.data;
     }
 
-    public ApiErrorResponse getError() {
+    public ErrorResponse getError() {
         return this.error;
     }
 
@@ -27,7 +25,7 @@ public class ApiResponse<T> {
         this.data = data;
     }
 
-    public void setError(ApiErrorResponse error) {
+    public void setError(ErrorResponse error) {
         this.error = error;
     }
 }

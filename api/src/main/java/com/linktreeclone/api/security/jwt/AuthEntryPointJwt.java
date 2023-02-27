@@ -14,8 +14,8 @@ import org.springframework.stereotype.Component;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.linktreeclone.api.exception.ApiErrorResponse;
 import com.linktreeclone.api.payload.response.ApiResponse;
+import com.linktreeclone.api.payload.response.ErrorResponse;
 import com.linktreeclone.api.payload.response.JwtResponse;
 
 import jakarta.servlet.ServletException;
@@ -27,8 +27,8 @@ public class AuthEntryPointJwt implements AuthenticationEntryPoint {
 
     private static final Logger logger = LoggerFactory.getLogger(AuthEntryPointJwt.class);
     
-    private ApiErrorResponse createErrorReponse(AuthenticationException authException) {
-        ApiErrorResponse errorResponse = new ApiErrorResponse();
+    private ErrorResponse createErrorReponse(AuthenticationException authException) {
+        ErrorResponse errorResponse = new ErrorResponse();
         if (authException instanceof BadCredentialsException) {
             errorResponse.setHttpStatus(HttpStatus.NOT_FOUND);
             errorResponse.setErrorCode("404");
