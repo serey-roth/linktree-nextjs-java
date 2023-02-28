@@ -113,6 +113,8 @@ public class AuthController {
 		
 		ResponseCookie jwtCookie = jwtUtils.generateJwtCookie(auth);
 
+		// String jwt = jwtUtils.generateJwtToken(auth);
+
 		List<String> roles = userDetails.getAuthorities().stream()
 				.map(item -> item.getAuthority())
 				.collect(Collectors.toList());
@@ -127,6 +129,19 @@ public class AuthController {
 				roles
 			), null
 		));
+
+		// return new ResponseEntity<ApiResponse<JwtResponse>>(
+		// 	new ApiResponse<JwtResponse>(
+		// 		new JwtResponse(
+		// 			jwt, 
+		// 			userDetails.getId(), 
+		// 			userDetails.getUsername(), 
+		// 			userDetails.getEmail(), 
+		// 			roles
+		// 		), null
+		// 	),
+		// 	HttpStatus.OK
+		// );
     }
 
     @PostMapping("/register")

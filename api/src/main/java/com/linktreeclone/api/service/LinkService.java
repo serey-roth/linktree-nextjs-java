@@ -5,6 +5,7 @@ import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 
 import com.linktreeclone.api.dao.LinkDao;
@@ -38,5 +39,23 @@ public class LinkService {
 
     public Optional<Link> updateLinkById(Long id, Link newLink) {
         return linkDao.updateLinkById(id, newLink);
+    }
+
+    public List<Link> selectPaginatedLinksByCreatorId(
+        Long creatorId, 
+        int pageCount, 
+        int pageNumber
+    ) {
+        return linkDao.selectPaginatedLinksByCreatorId(creatorId, pageCount, pageNumber);
+    }
+
+    public List<Link> selectPaginatedSortedLinksByCreatorId(
+        Long creatorId, 
+        int pageCount, 
+        int pageNumber,
+        String sortKey, 
+        Direction order
+    ) {
+        return linkDao.selectPaginatedSortedLinksByCreatorId(creatorId, pageCount, pageNumber, sortKey, order);
     }
 }
