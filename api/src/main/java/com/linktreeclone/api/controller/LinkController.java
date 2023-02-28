@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.linktreeclone.api.exception.NotFoundException;
@@ -56,11 +58,13 @@ public class LinkController {
         );
     }
     
-    @PostMapping(path = "/links/paginated")
+    @GetMapping(path = "/links/paginated")
     public ResponseEntity<List<Link>> getPaginatedLinksByCreatorId(
         @AuthenticationPrincipal UserDetailsImpl userDetails,
-        @Valid @NotNull @RequestBody PaginatedRequest paginatedRequest
+        @Valid @NotNull @RequestParam(defaultValue = "5") String pageCount,
+        @Valid @NotNull @RequestParam(defaultValue = "1") String pageNumber
     ) {
+        PaginatedRequest paginatedRequest = new PaginatedRequest(pageCount, pageNumber);
         Long creatorId = userDetails.getId();
         List<Link> links = linkService.selectPaginatedLinksByCreatorId(
             creatorId, 
@@ -73,11 +77,20 @@ public class LinkController {
         );
     }
 
-    @PostMapping("/links/paginated_sorted")
+    @GetMapping("/links/paginated_sorted")
     public ResponseEntity<List<Link>> getPaginatedSortedLinksByCreatorId(
-        @Valid @NotNull @RequestBody SortedPaginatedRequest paginatedRequest,
+        @Valid @NotNull @RequestParam(defaultValue = "5") String pageCount,
+        @Valid @NotNull @RequestParam(defaultValue = "1") String pageNumber,
+        @Valid @NotNull @RequestParam String sortKey,
+        @Valid @NotNull @RequestParam Direction order,
         @AuthenticationPrincipal UserDetailsImpl userDetails
     ) {
+        SortedPaginatedRequest paginatedRequest = new SortedPaginatedRequest(
+            pageCount,
+            pageNumber,
+            order,
+            sortKey
+        );
         Long creatorId = userDetails.getId();
         List<Link> links = linkService.selectPaginatedSortedLinksByCreatorId(
             creatorId, 
