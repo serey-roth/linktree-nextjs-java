@@ -14,7 +14,13 @@ public class SortedPaginatedRequest extends PaginatedRequest {
 
     public SortedPaginatedRequest() {};
 
-    public SortedPaginatedRequest(Direction order, String sortKey) {
+    public SortedPaginatedRequest(
+        String pageCount, 
+        String pageNumber, 
+        Direction order, 
+        String sortKey
+    ) {
+        super(pageCount, pageNumber);
         this.order = order;
         this.sortKey = sortKey;
     }
