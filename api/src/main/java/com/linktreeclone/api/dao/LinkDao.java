@@ -3,6 +3,8 @@ package com.linktreeclone.api.dao;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.domain.Sort.Direction;
+
 import com.linktreeclone.api.model.Link;
 
 public interface LinkDao {
@@ -16,4 +18,8 @@ public interface LinkDao {
     boolean deleteLinkById(Long id);
 
     Optional<Link> updateLinkById(Long id, Link newLink);
+
+    List<Link> selectPaginatedLinksByCreatorId(Long creatorId, int pageCount, int pageNumber);
+
+    List<Link> selectPaginatedSortedLinksByCreatorId(Long creatorId, int pageCount, int pageNumber, String sortBy, Direction order);
 }
