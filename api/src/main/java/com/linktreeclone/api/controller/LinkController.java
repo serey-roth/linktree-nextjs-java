@@ -20,11 +20,14 @@ import org.springframework.web.bind.annotation.RestController;
 import com.linktreeclone.api.exception.NotFoundException;
 import com.linktreeclone.api.model.Link;
 import com.linktreeclone.api.model.User;
+import com.linktreeclone.api.payload.request.PaginatedRequest;
+import com.linktreeclone.api.payload.request.SortedPaginatedRequest;
 import com.linktreeclone.api.repository.UserRepository;
 import com.linktreeclone.api.security.service.UserDetailsImpl;
 import com.linktreeclone.api.service.LinkService;
 
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 
 @CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true")
 @RestController
@@ -41,7 +44,7 @@ public class LinkController {
         this.linkService = linkService;
     }
 
-    @GetMapping 
+    @GetMapping(path = "/links/all")
     public ResponseEntity<List<Link>> getAllLinksByCreatorId(
         @AuthenticationPrincipal UserDetailsImpl userDetails
     ) {
@@ -53,6 +56,42 @@ public class LinkController {
         );
     }
     
+    @GetMapping(path = "/links/paginated")
+    public ResponseEntity<List<Link>> getPaginatedLinksByCreatorId(
+        @AuthenticationPrincipal UserDetailsImpl userDetails,
+        @Valid @NotNull @RequestBody PaginatedRequest paginatedRequest
+    ) {
+        Long creatorId = userDetails.getId();
+        List<Link> links = linkService.selectPaginatedLinksByCreatorId(
+            creatorId, 
+            paginatedRequest.getPageCount(), 
+            paginatedRequest.getPageNumber()
+        );
+        return new ResponseEntity<List<Link>>(
+            links, 
+            HttpStatus.OK
+        );
+    }
+
+    @GetMapping("/links/paginated_sorted")
+    public ResponseEntity<List<Link>> getPaginatedSortedLinksByCreatorId(
+        @Valid @NotNull @RequestBody SortedPaginatedRequest paginatedRequest,
+        @AuthenticationPrincipal UserDetailsImpl userDetails
+    ) {
+        Long creatorId = userDetails.getId();
+        List<Link> links = linkService.selectPaginatedSortedLinksByCreatorId(
+            creatorId, 
+            paginatedRequest.getPageCount(), 
+            paginatedRequest.getPageNumber(),
+            paginatedRequest.getSortKey(),
+            paginatedRequest.getOrder()
+        );
+        return new ResponseEntity<List<Link>>(
+            links, 
+            HttpStatus.OK
+        );
+    }
+
     @PostMapping
     public boolean addLink(
         @Valid @RequestBody Link link,
