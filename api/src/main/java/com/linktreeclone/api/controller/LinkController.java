@@ -56,7 +56,7 @@ public class LinkController {
         );
     }
     
-    @GetMapping(path = "/links/paginated")
+    @PostMapping(path = "/links/paginated")
     public ResponseEntity<List<Link>> getPaginatedLinksByCreatorId(
         @AuthenticationPrincipal UserDetailsImpl userDetails,
         @Valid @NotNull @RequestBody PaginatedRequest paginatedRequest
@@ -73,7 +73,7 @@ public class LinkController {
         );
     }
 
-    @GetMapping("/links/paginated_sorted")
+    @PostMapping("/links/paginated_sorted")
     public ResponseEntity<List<Link>> getPaginatedSortedLinksByCreatorId(
         @Valid @NotNull @RequestBody SortedPaginatedRequest paginatedRequest,
         @AuthenticationPrincipal UserDetailsImpl userDetails
