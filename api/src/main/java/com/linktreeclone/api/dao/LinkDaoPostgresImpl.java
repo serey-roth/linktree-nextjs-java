@@ -4,6 +4,9 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Repository;
 
 import com.linktreeclone.api.model.Link;
@@ -55,6 +58,31 @@ public class LinkDaoPostgresImpl implements LinkDao {
         } else {
             return Optional.empty();
         }
+    }
+
+    @Override
+    public List<Link> selectPaginatedLinksByCreatorId(
+        Long creatorId, 
+        int pageCount, 
+        int pageNumber
+    ) {
+        Pageable page = PageRequest.of(pageNumber, pageCount);
+        return linkRepository.findAllByCreatorId(creatorId, page);
+    }
+
+    @Override
+    public List<Link> selectPaginatedSortedLinksByCreatorId(
+        Long creatorId, 
+        int pageCount, 
+        int pageNumber,
+        String sortKey, 
+        Direction order
+    ) {
+        Pageable page = PageRequest.of(
+            pageNumber, 
+            pageCount
+        ).withSort(order, sortKey);
+        return linkRepository.findAllByCreatorId(creatorId, page);
     }
     
 }
