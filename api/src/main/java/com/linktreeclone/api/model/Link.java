@@ -98,4 +98,25 @@ public class Link {
     public void setCreator(User creator) {
         this.creator = creator;
     }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Date getCreatedAt() {
+        return this.createdAt;
+    }
+
+    public void setCreatedAt(Date createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public Date getUpdatedAt() {
+        return this.updatedAt;
+    }
+
+    public void setUpdatedAt(Date updatedAt) {
+        this.updatedAt = updatedAt;
+    }
+
 }
