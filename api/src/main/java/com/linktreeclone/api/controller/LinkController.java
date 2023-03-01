@@ -25,6 +25,7 @@ import com.linktreeclone.api.model.Link;
 import com.linktreeclone.api.model.User;
 import com.linktreeclone.api.payload.request.PaginatedRequest;
 import com.linktreeclone.api.payload.request.SortedPaginatedRequest;
+import com.linktreeclone.api.payload.response.ApiResponse;
 import com.linktreeclone.api.payload.response.PaginatedResponse;
 import com.linktreeclone.api.repository.UserRepository;
 import com.linktreeclone.api.security.service.UserDetailsImpl;
@@ -49,19 +50,22 @@ public class LinkController {
     }
 
     @GetMapping(path = "/links/all")
-    public ResponseEntity<List<Link>> getAllLinksByCreatorId(
+    public ResponseEntity<ApiResponse<List<Link>>> getAllLinksByCreatorId(
         @AuthenticationPrincipal UserDetailsImpl userDetails
     ) {
         Long creatorId = userDetails.getId();
         List<Link> links = linkService.selectAllLinksByCreatorId(creatorId);
-        return new ResponseEntity<List<Link>>(
-            links, 
+        return new ResponseEntity<ApiResponse<List<Link>>>(
+            new ApiResponse<List<Link>>(
+                links,
+                null
+            ),
             HttpStatus.OK
         );
     }
     
     @GetMapping(path = "/links/paginated")
-    public ResponseEntity<PaginatedResponse<Link>> getPaginatedLinksByCreatorId(
+    public ResponseEntity<ApiResponse<PaginatedResponse<Link>>> getPaginatedLinksByCreatorId(
         @AuthenticationPrincipal UserDetailsImpl userDetails,
         @Valid @NotNull @RequestParam(defaultValue = "5") String pageCount,
         @Valid @NotNull @RequestParam(defaultValue = "1") String pageNumber
@@ -77,18 +81,20 @@ public class LinkController {
         
         int totalPage = links.getTotalPages();
 
-        return new ResponseEntity<PaginatedResponse<Link>>(
-            new PaginatedResponse<Link>(
-                totalPage,
-                paginatedRequest.getPageNumber(),
-                links.getContent()
+        return new ResponseEntity<ApiResponse<PaginatedResponse<Link>>>(
+            new ApiResponse<PaginatedResponse<Link>>(
+                new PaginatedResponse<Link>(
+                    totalPage,
+                    paginatedRequest.getPageNumber(),
+                    links.getContent()
+                ), null
             ), 
             HttpStatus.OK
         );
     }
 
     @GetMapping("/links/paginated_sorted")
-    public ResponseEntity<PaginatedResponse<Link>> getPaginatedSortedLinksByCreatorId(
+    public ResponseEntity<ApiResponse<PaginatedResponse<Link>>> getPaginatedSortedLinksByCreatorId(
         @Valid @NotNull @RequestParam(defaultValue = "5") String pageCount,
         @Valid @NotNull @RequestParam(defaultValue = "1") String pageNumber,
         @Valid @NotNull @RequestParam String sortKey,
@@ -113,11 +119,13 @@ public class LinkController {
 
         int totalPage = links.getTotalPages();
 
-        return new ResponseEntity<PaginatedResponse<Link>>(
-            new PaginatedResponse<Link>(
-                totalPage,
-                paginatedRequest.getPageNumber(),
-                links.getContent()
+        return new ResponseEntity<ApiResponse<PaginatedResponse<Link>>>(
+            new ApiResponse<PaginatedResponse<Link>>(
+                new PaginatedResponse<Link>(
+                    totalPage,
+                    paginatedRequest.getPageNumber(),
+                    links.getContent()
+                ), null
             ), 
             HttpStatus.OK
         );
