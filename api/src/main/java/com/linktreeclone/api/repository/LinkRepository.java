@@ -2,6 +2,7 @@ package com.linktreeclone.api.repository;
 
 import java.util.List;
 
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
@@ -12,7 +13,9 @@ import jakarta.transaction.Transactional;
 public interface LinkRepository extends JpaRepository<Link, Long>  {
     List<Link> findAllByCreatorId(Long creatorId);
 
-    List<Link> findAllByCreatorId(Long creatorId, Pageable page);
+    //List<Link> findAllByCreatorId(Long creatorId, Pageable page);
+
+    Page<Link> findAllByCreatorId(Long creatorId, Pageable page);
 
     @Transactional
     void deleteByCreatorId(Long creatorId);
