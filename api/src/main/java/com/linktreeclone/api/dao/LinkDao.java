@@ -3,6 +3,7 @@ package com.linktreeclone.api.dao;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort.Direction;
 
 import com.linktreeclone.api.model.Link;
@@ -19,7 +20,7 @@ public interface LinkDao {
 
     Optional<Link> updateLinkById(Long id, Link newLink);
 
-    List<Link> selectPaginatedLinksByCreatorId(Long creatorId, int pageCount, int pageNumber);
+    Page<Link> selectPaginatedLinksByCreatorId(Long creatorId, int pageCount, int pageNumber);
 
-    List<Link> selectPaginatedSortedLinksByCreatorId(Long creatorId, int pageCount, int pageNumber, String sortBy, Direction order);
+    Page<Link> selectPaginatedSortedLinksByCreatorId(Long creatorId, int pageCount, int pageNumber, String sortBy, Direction order);
 }

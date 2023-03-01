@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -15,6 +17,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.linktreeclone.api.exception.NotFoundException;
@@ -22,6 +25,7 @@ import com.linktreeclone.api.model.Link;
 import com.linktreeclone.api.model.User;
 import com.linktreeclone.api.payload.request.PaginatedRequest;
 import com.linktreeclone.api.payload.request.SortedPaginatedRequest;
+import com.linktreeclone.api.payload.response.PaginatedResponse;
 import com.linktreeclone.api.repository.UserRepository;
 import com.linktreeclone.api.security.service.UserDetailsImpl;
 import com.linktreeclone.api.service.LinkService;
@@ -57,37 +61,64 @@ public class LinkController {
     }
     
     @GetMapping(path = "/links/paginated")
-    public ResponseEntity<List<Link>> getPaginatedLinksByCreatorId(
+    public ResponseEntity<PaginatedResponse<Link>> getPaginatedLinksByCreatorId(
         @AuthenticationPrincipal UserDetailsImpl userDetails,
-        @Valid @NotNull @RequestBody PaginatedRequest paginatedRequest
+        @Valid @NotNull @RequestParam(defaultValue = "5") String pageCount,
+        @Valid @NotNull @RequestParam(defaultValue = "1") String pageNumber
     ) {
+        PaginatedRequest paginatedRequest = new PaginatedRequest(pageCount, pageNumber);
         Long creatorId = userDetails.getId();
-        List<Link> links = linkService.selectPaginatedLinksByCreatorId(
+
+        Page<Link> links = linkService.selectPaginatedLinksByCreatorId(
             creatorId, 
             paginatedRequest.getPageCount(), 
             paginatedRequest.getPageNumber()
         );
-        return new ResponseEntity<List<Link>>(
-            links, 
+        
+        int totalPage = links.getTotalPages();
+
+        return new ResponseEntity<PaginatedResponse<Link>>(
+            new PaginatedResponse<Link>(
+                totalPage,
+                paginatedRequest.getPageNumber(),
+                links.getContent()
+            ), 
             HttpStatus.OK
         );
     }
 
     @GetMapping("/links/paginated_sorted")
-    public ResponseEntity<List<Link>> getPaginatedSortedLinksByCreatorId(
-        @Valid @NotNull @RequestBody SortedPaginatedRequest paginatedRequest,
+    public ResponseEntity<PaginatedResponse<Link>> getPaginatedSortedLinksByCreatorId(
+        @Valid @NotNull @RequestParam(defaultValue = "5") String pageCount,
+        @Valid @NotNull @RequestParam(defaultValue = "1") String pageNumber,
+        @Valid @NotNull @RequestParam String sortKey,
+        @Valid @NotNull @RequestParam Direction order,
         @AuthenticationPrincipal UserDetailsImpl userDetails
     ) {
+        SortedPaginatedRequest paginatedRequest = new SortedPaginatedRequest(
+            pageCount,
+            pageNumber,
+            order,
+            sortKey
+        );
         Long creatorId = userDetails.getId();
-        List<Link> links = linkService.selectPaginatedSortedLinksByCreatorId(
+        
+        Page<Link> links = linkService.selectPaginatedSortedLinksByCreatorId(
             creatorId, 
             paginatedRequest.getPageCount(), 
             paginatedRequest.getPageNumber(),
             paginatedRequest.getSortKey(),
             paginatedRequest.getOrder()
         );
-        return new ResponseEntity<List<Link>>(
-            links, 
+
+        int totalPage = links.getTotalPages();
+
+        return new ResponseEntity<PaginatedResponse<Link>>(
+            new PaginatedResponse<Link>(
+                totalPage,
+                paginatedRequest.getPageNumber(),
+                links.getContent()
+            ), 
             HttpStatus.OK
         );
     }
