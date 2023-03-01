@@ -5,6 +5,7 @@ import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 
@@ -41,7 +42,7 @@ public class LinkService {
         return linkDao.updateLinkById(id, newLink);
     }
 
-    public List<Link> selectPaginatedLinksByCreatorId(
+    public Page<Link> selectPaginatedLinksByCreatorId(
         Long creatorId, 
         int pageCount, 
         int pageNumber
@@ -49,7 +50,7 @@ public class LinkService {
         return linkDao.selectPaginatedLinksByCreatorId(creatorId, pageCount, pageNumber);
     }
 
-    public List<Link> selectPaginatedSortedLinksByCreatorId(
+    public Page<Link> selectPaginatedSortedLinksByCreatorId(
         Long creatorId, 
         int pageCount, 
         int pageNumber,
