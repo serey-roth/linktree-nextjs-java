@@ -131,7 +131,7 @@ public class LinkController {
         );
     }
 
-    @PostMapping
+    @PostMapping(path = "/links")
     public boolean addLink(
         @Valid @RequestBody Link link,
         @AuthenticationPrincipal UserDetailsImpl userDetails
