@@ -1,5 +1,6 @@
 package com.linktreeclone.api.payload.request;
 
+import java.util.List;
 import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -19,10 +20,12 @@ public class RegisterRequest extends AuthRequest {
     public RegisterRequest(
         @JsonProperty("email") String email, 
         @JsonProperty("username") String username, 
-        @JsonProperty("password") String password
+        @JsonProperty("password") String password,
+        @JsonProperty("roles") List<String> roles
     ) {
         super(username, password);
         this.email = email;
+        this.roles = Set.copyOf(roles);
     }
 
     public String getEmail() {
