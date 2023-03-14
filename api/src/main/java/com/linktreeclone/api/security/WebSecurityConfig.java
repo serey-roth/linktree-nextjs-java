@@ -72,7 +72,8 @@ public class WebSecurityConfig {
             .and()
             .authorizeHttpRequests(authorize -> authorize
                 .requestMatchers("/api/auth/**").permitAll()
-                .requestMatchers("/api/secure/**").authenticated()
+                .requestMatchers("/api/admin/**").hasAuthority("ROLE_ADMIN")
+                .requestMatchers("/api/user/**").permitAll()
                 .anyRequest().denyAll()
             );
         
