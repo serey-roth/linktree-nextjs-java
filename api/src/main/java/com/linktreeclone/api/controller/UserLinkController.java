@@ -52,7 +52,7 @@ public class UserLinkController {
      * @throws RuntimeException
      */
     @GetMapping(path = "/{username}")
-    public ResponseEntity<ApiResponse<UserWithResourcesResponse<List<Link>>>> getAllLinksByCreatorId(
+    public ResponseEntity<ApiResponse<UserWithResourcesResponse<List<Link>>>> getUserWithLinks(
         @Valid @NotBlank(message = "Username is mandatory!")
         @PathVariable("username") String username
     ) throws RuntimeException {
@@ -77,7 +77,7 @@ public class UserLinkController {
     }
 
     @GetMapping(path = "/{username}/paginated")
-    public ResponseEntity<ApiResponse<UserWithResourcesResponse<PaginatedResponse<Link>>>> getPaginatedLinksByCreatorId(
+    public ResponseEntity<ApiResponse<UserWithResourcesResponse<PaginatedResponse<Link>>>> getUserWithPaginatedLinks(
         @Valid @NotBlank(message = "Username is mandatory!") 
         @PathVariable("username") String username,
         @Valid @NotNull @RequestParam(defaultValue = "5") String pageCount,
@@ -116,7 +116,7 @@ public class UserLinkController {
     }
     
     @GetMapping(path = "/{username}/paginated-sorted")
-    public ResponseEntity<ApiResponse<UserWithResourcesResponse<PaginatedResponse<Link>>>> getPaginatedSortedLinksByCreatorId(
+    public ResponseEntity<ApiResponse<UserWithResourcesResponse<PaginatedResponse<Link>>>> getUserWithSortedPaginatedLinks(
         @Valid @NotBlank(message = "Username is mandatory!") 
         @PathVariable("username") String username,
         @Valid @NotNull @RequestParam(defaultValue = "5") String pageCount,
