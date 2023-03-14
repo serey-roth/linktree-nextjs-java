@@ -36,8 +36,8 @@ import jakarta.validation.constraints.NotNull;
 
 @CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true")
 @RestController
-@RequestMapping("/api/secure")
-public class LinkController {
+@RequestMapping("/api/admin")
+public class AdminLinkController {
     
     @Autowired
     UserRepository userRepository;
@@ -45,11 +45,11 @@ public class LinkController {
     private final LinkService linkService;
 
     @Autowired
-    public LinkController(LinkService linkService) {
+    public AdminLinkController(LinkService linkService) {
         this.linkService = linkService;
     }
 
-    @GetMapping(path = "/links/all")
+    @GetMapping(path = "/links")
     public ResponseEntity<ApiResponse<List<Link>>> getAllLinksByCreatorId(
         @AuthenticationPrincipal UserDetailsImpl userDetails
     ) {
@@ -93,7 +93,7 @@ public class LinkController {
         );
     }
 
-    @GetMapping("/links/paginated_sorted")
+    @GetMapping("/links/paginated-sorted")
     public ResponseEntity<ApiResponse<PaginatedResponse<Link>>> getPaginatedSortedLinksByCreatorId(
         @Valid @NotNull @RequestParam(defaultValue = "5") String pageCount,
         @Valid @NotNull @RequestParam(defaultValue = "1") String pageNumber,
