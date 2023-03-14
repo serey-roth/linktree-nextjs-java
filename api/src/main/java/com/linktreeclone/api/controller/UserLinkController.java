@@ -61,14 +61,8 @@ public class UserLinkController {
             User user = existingUser.get();
             List<Link> links = linkService.selectAllLinksByCreatorId(user.getId());
             ApiResponse<UserWithResourcesResponse<List<Link>>> response = new ApiResponse<>(
-                new UserWithResourcesResponse<List<Link>>(
-                    user.getId(),
-                    user.getUsername(),
-                    user.getEmail(),
-                    user.getRoles()
-                        .stream()
-                        .map(role -> role.getName().name())
-                        .collect(Collectors.toList()),
+                generatePaginatedResponse(
+                    user, 
                     links
                 ),
                 null
@@ -102,14 +96,8 @@ public class UserLinkController {
         
             int totalPage = links.getTotalPages();
             ApiResponse<UserWithResourcesResponse<PaginatedResponse<Link>>> response = new ApiResponse<>(
-                new UserWithResourcesResponse<PaginatedResponse<Link>>(
-                    user.getId(),
-                    user.getUsername(),
-                    user.getEmail(),
-                    user.getRoles()
-                        .stream()
-                        .map(role -> role.getName().name())
-                        .collect(Collectors.toList()),
+                generatePaginatedResponse(
+                    user,
                     new PaginatedResponse<Link>(
                         totalPage,
                         paginatedRequest.getPageNumber(),
@@ -155,15 +143,10 @@ public class UserLinkController {
             );
 
             int totalPage = links.getTotalPages();
+
             ApiResponse<UserWithResourcesResponse<PaginatedResponse<Link>>> response = new ApiResponse<>(
-                new UserWithResourcesResponse<PaginatedResponse<Link>>(
-                    user.getId(),
-                    user.getUsername(),
-                    user.getEmail(),
-                    user.getRoles()
-                        .stream()
-                        .map(role -> role.getName().name())
-                        .collect(Collectors.toList()),
+                generatePaginatedResponse(
+                    user, 
                     new PaginatedResponse<Link>(
                         totalPage,
                         paginatedRequest.getPageNumber(),
@@ -179,5 +162,21 @@ public class UserLinkController {
         } else {
             throw new NotFoundException("User not found!", "No user with this username!");
         }
+    }
+
+    private <T> UserWithResourcesResponse<T> generatePaginatedResponse(
+        User user,
+        T resources
+    ) {
+        return new UserWithResourcesResponse<T>(
+            user.getId(),
+            user.getUsername(),
+            user.getEmail(),
+            user.getRoles()
+                .stream()
+                .map(role -> role.getName().name())
+                .collect(Collectors.toList()),
+            resources
+        );
     }
 }
