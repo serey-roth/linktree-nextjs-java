@@ -17,11 +17,11 @@ public class UserWithResourcesResponse<T> extends UserResponse {
         this.resources = resources;
     }
     
-    public T getLinks() {
+    public T getResources() {
         return this.resources;
     }
 
-    public void setLinks(T resources) {
+    public void setResources(T resources) {
         this.resources = resources;
     }
     
