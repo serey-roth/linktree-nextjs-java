@@ -86,17 +86,18 @@ public class UserLinkController {
         if (existingUser.isPresent()) {
             User user = existingUser.get();
 
-            PaginatedArgs paginatedRequest = new PaginatedArgs(pageCount, pageNumber);
+            PaginatedArgs paginatedArgs = new PaginatedArgs(pageCount, pageNumber);
+            
             PaginatedData<Link> links = linkService.selectPaginatedLinksByCreatorId(
                 user.getId(), 
-                paginatedRequest.getPageCount(), 
-                paginatedRequest.getPageNumber()
+                paginatedArgs
             );
         
             ApiResult<UserInfoWithResources<PaginatedData<Link>>> response = new ApiResult<>(
                 generatePaginatedResponse(user, links),
                 null
             );
+
             return new ResponseEntity<ApiResult<UserInfoWithResources<PaginatedData<Link>>>>(
                 response,
                 HttpStatus.OK
@@ -119,7 +120,7 @@ public class UserLinkController {
         if (existingUser.isPresent()) {
             User user = existingUser.get();
 
-            SortedPaginatedArgs paginatedRequest = new SortedPaginatedArgs(
+            SortedPaginatedArgs paginatedArgs = new SortedPaginatedArgs(
                 pageCount,
                 pageNumber,
                 order,
@@ -128,16 +129,14 @@ public class UserLinkController {
 
             PaginatedData<Link> links = linkService.selectPaginatedSortedLinksByCreatorId(
                 user.getId(), 
-                paginatedRequest.getPageCount(), 
-                paginatedRequest.getPageNumber(),
-                paginatedRequest.getSortKey(),
-                paginatedRequest.getOrder()
+                paginatedArgs
             );
 
             ApiResult<UserInfoWithResources<PaginatedData<Link>>> response = new ApiResult<>(
                 generatePaginatedResponse(user, links),
                 null
             );
+
             return new ResponseEntity<ApiResult<UserInfoWithResources<PaginatedData<Link>>>>(
                 response,
                 HttpStatus.OK

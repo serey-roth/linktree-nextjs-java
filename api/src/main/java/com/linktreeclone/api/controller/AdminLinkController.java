@@ -55,10 +55,7 @@ public class AdminLinkController {
         Long creatorId = userDetails.getId();
         List<Link> links = linkService.selectAllLinksByCreatorId(creatorId);
         return new ResponseEntity<ApiResult<List<Link>>>(
-            new ApiResult<List<Link>>(
-                links,
-                null
-            ),
+            new ApiResult<List<Link>>(links, null),
             HttpStatus.OK
         );
     }
@@ -69,13 +66,12 @@ public class AdminLinkController {
         @Valid @NotNull @RequestParam(defaultValue = "5") String pageCount,
         @Valid @NotNull @RequestParam(defaultValue = "1") String pageNumber
     ) {
-        PaginatedArgs paginatedRequest = new PaginatedArgs(pageCount, pageNumber);
+        PaginatedArgs paginatedArgs = new PaginatedArgs(pageCount, pageNumber);
         Long creatorId = userDetails.getId();
 
         PaginatedData<Link> links = linkService.selectPaginatedLinksByCreatorId(
             creatorId, 
-            paginatedRequest.getPageCount(), 
-            paginatedRequest.getPageNumber()
+            paginatedArgs
         );
 
         return new ResponseEntity<ApiResult<PaginatedData<Link>>>(
@@ -92,7 +88,7 @@ public class AdminLinkController {
         @Valid @NotNull @RequestParam Direction order,
         @AuthenticationPrincipal UserDetailsImpl userDetails
     ) {
-        SortedPaginatedArgs paginatedRequest = new SortedPaginatedArgs(
+        SortedPaginatedArgs paginatedArgs = new SortedPaginatedArgs(
             pageCount,
             pageNumber,
             order,
@@ -103,10 +99,7 @@ public class AdminLinkController {
         
         PaginatedData<Link> links = linkService.selectPaginatedSortedLinksByCreatorId(
             creatorId, 
-            paginatedRequest.getPageCount(), 
-            paginatedRequest.getPageNumber(),
-            paginatedRequest.getSortKey(),
-            paginatedRequest.getOrder()
+            paginatedArgs
         );
 
         return new ResponseEntity<ApiResult<PaginatedData<Link>>>(

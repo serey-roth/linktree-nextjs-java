@@ -5,12 +5,12 @@ import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 
 import com.linktreeclone.api.dao.LinkDao;
 import com.linktreeclone.api.model.Link;
+import com.linktreeclone.api.payload.input.PaginatedArgs;
+import com.linktreeclone.api.payload.input.SortedPaginatedArgs;
 import com.linktreeclone.api.payload.output.PaginatedData;
 
 @Service
@@ -19,8 +19,11 @@ public class LinkService {
     @Autowired
     private final LinkDao linkDao;
 
-    public LinkService(@Qualifier("postgres") LinkDao linkDao) {
+    private final PaginationService<Link> paginationService;
+
+    public LinkService(@Qualifier("postgres-link") LinkDao linkDao) {
         this.linkDao = linkDao;
+        this.paginationService = new PaginationService<>(linkDao);
     }
 
     public boolean addLink(Link link) {
@@ -29,6 +32,10 @@ public class LinkService {
 
     public Optional<Link> selectLinkById(Long id) {
         return linkDao.selectLinkById(id);
+    }
+
+    public List<Link> selectAllLinks() {
+        return linkDao.selectAllLinks();
     }
     
     public List<Link> selectAllLinksByCreatorId(Long creatorId) {
@@ -45,45 +52,21 @@ public class LinkService {
 
     public PaginatedData<Link> selectPaginatedLinksByCreatorId(
         Long creatorId, 
-        int pageCount, 
-        int pageNumber
+        PaginatedArgs paginatedArgs
     ) {
-        Page<Link> links = linkDao.selectPaginatedLinksByCreatorId(
+        return paginationService.selectPaginatedItemsByCreatorId(
             creatorId, 
-            pageCount, 
-            pageNumber
-        );
-
-        int totalPage = links.getTotalPages();
-
-        return new PaginatedData<Link>(
-            totalPage,
-            pageNumber,
-            links.getContent()
+            paginatedArgs
         );
     }
 
     public PaginatedData<Link> selectPaginatedSortedLinksByCreatorId(
         Long creatorId, 
-        int pageCount, 
-        int pageNumber,
-        String sortKey, 
-        Direction order
+        SortedPaginatedArgs paginatedArgs
     ) {
-        Page<Link> links = linkDao.selectPaginatedSortedLinksByCreatorId(
+        return paginationService.selectPaginatedSortedItemsByCreatorId(
             creatorId, 
-            pageCount, 
-            pageNumber, 
-            sortKey, 
-            order
-        );
-
-        int totalPage = links.getTotalPages();
-
-        return new PaginatedData<Link>(
-            totalPage,
-            pageNumber,
-            links.getContent()
+            paginatedArgs
         );
     }
 }
