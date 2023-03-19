@@ -1,4 +1,4 @@
-package com.linktreeclone.api.payload.response;
+package com.linktreeclone.api.payload.output;
 
 import java.time.LocalDateTime;
 
@@ -6,7 +6,7 @@ import org.springframework.http.HttpStatus;
 
 import jakarta.validation.constraints.NotBlank;
 
-public class ErrorResponse {
+public class Error {
 
     //http status code
     private HttpStatus status;
@@ -24,11 +24,11 @@ public class ErrorResponse {
     // Time of the error.make sure to define a standard time zone to avoid any confusion
     private LocalDateTime timestamp;
 
-    public ErrorResponse() {
+    public Error() {
         this.timestamp = LocalDateTime.now();
     }
 
-    public ErrorResponse(
+    public Error(
         HttpStatus status,
         String errorCode,
         String message,
