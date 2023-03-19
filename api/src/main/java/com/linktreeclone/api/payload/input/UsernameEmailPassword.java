@@ -1,4 +1,4 @@
-package com.linktreeclone.api.payload.request;
+package com.linktreeclone.api.payload.input;
 
 import java.util.List;
 import java.util.Set;
@@ -8,16 +8,16 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 
-public class RegisterRequest extends AuthRequest {
+public class UsernameEmailPassword extends UsernamePassword {
     @NotBlank(message = "Email is mandatory!")
     @Email(message = "Email is invalid!")
     private String email;
 
     private Set<String> roles;
     
-    public RegisterRequest() {}
+    public UsernameEmailPassword() {}
 
-    public RegisterRequest(
+    public UsernameEmailPassword(
         @JsonProperty("email") String email, 
         @JsonProperty("username") String username, 
         @JsonProperty("password") String password,
