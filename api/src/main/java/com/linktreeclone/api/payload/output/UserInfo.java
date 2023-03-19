@@ -1,14 +1,14 @@
-package com.linktreeclone.api.payload.response;
+package com.linktreeclone.api.payload.output;
 
 import java.util.List;
 
-public class UserResponse {
+public class UserInfo {
     private Long id;
     private String username;
     private String email;
     private List<String> roles;
   
-    public UserResponse(Long id, String username, String email, List<String> roles) {
+    public UserInfo(Long id, String username, String email, List<String> roles) {
       this.id = id;
       this.username = username;
       this.email = email;

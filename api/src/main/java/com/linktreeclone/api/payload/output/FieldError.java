@@ -1,4 +1,4 @@
-package com.linktreeclone.api.payload.response;
+package com.linktreeclone.api.payload.output;
 
 public class FieldError {
     private String field;

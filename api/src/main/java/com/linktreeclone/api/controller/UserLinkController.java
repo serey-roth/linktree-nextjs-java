@@ -19,11 +19,11 @@ import org.springframework.web.bind.annotation.RestController;
 import com.linktreeclone.api.exception.NotFoundException;
 import com.linktreeclone.api.model.Link;
 import com.linktreeclone.api.model.User;
-import com.linktreeclone.api.payload.request.PaginatedRequest;
-import com.linktreeclone.api.payload.request.SortedPaginatedRequest;
-import com.linktreeclone.api.payload.response.ApiResponse;
-import com.linktreeclone.api.payload.response.PaginatedResponse;
-import com.linktreeclone.api.payload.response.UserWithResourcesResponse;
+import com.linktreeclone.api.payload.input.PaginatedArgs;
+import com.linktreeclone.api.payload.input.SortedPaginatedArgs;
+import com.linktreeclone.api.payload.output.ApiResult;
+import com.linktreeclone.api.payload.output.PaginatedData;
+import com.linktreeclone.api.payload.output.UserInfoWithResources;
 import com.linktreeclone.api.repository.UserRepository;
 import com.linktreeclone.api.service.LinkService;
 
@@ -52,7 +52,7 @@ public class UserLinkController {
      * @throws RuntimeException
      */
     @GetMapping(path = "/{username}")
-    public ResponseEntity<ApiResponse<UserWithResourcesResponse<List<Link>>>> getUserWithLinks(
+    public ResponseEntity<ApiResult<UserInfoWithResources<List<Link>>>> getUserWithLinks(
         @Valid @NotBlank(message = "Username is mandatory!")
         @PathVariable("username") String username
     ) throws RuntimeException {
@@ -60,14 +60,14 @@ public class UserLinkController {
         if (existingUser.isPresent()) {
             User user = existingUser.get();
             List<Link> links = linkService.selectAllLinksByCreatorId(user.getId());
-            ApiResponse<UserWithResourcesResponse<List<Link>>> response = new ApiResponse<>(
+            ApiResult<UserInfoWithResources<List<Link>>> response = new ApiResult<>(
                 generatePaginatedResponse(
                     user, 
                     links
                 ),
                 null
             );
-            return new ResponseEntity<ApiResponse<UserWithResourcesResponse<List<Link>>>>(
+            return new ResponseEntity<ApiResult<UserInfoWithResources<List<Link>>>>(
                 response,
                 HttpStatus.OK
             );
@@ -77,7 +77,7 @@ public class UserLinkController {
     }
 
     @GetMapping(path = "/{username}/paginated")
-    public ResponseEntity<ApiResponse<UserWithResourcesResponse<PaginatedResponse<Link>>>> getUserWithPaginatedLinks(
+    public ResponseEntity<ApiResult<UserInfoWithResources<PaginatedData<Link>>>> getUserWithPaginatedLinks(
         @Valid @NotBlank(message = "Username is mandatory!") 
         @PathVariable("username") String username,
         @Valid @NotNull @RequestParam(defaultValue = "5") String pageCount,
@@ -87,7 +87,7 @@ public class UserLinkController {
         if (existingUser.isPresent()) {
             User user = existingUser.get();
 
-            PaginatedRequest paginatedRequest = new PaginatedRequest(pageCount, pageNumber);
+            PaginatedArgs paginatedRequest = new PaginatedArgs(pageCount, pageNumber);
             Page<Link> links = linkService.selectPaginatedLinksByCreatorId(
                 user.getId(), 
                 paginatedRequest.getPageCount(), 
@@ -95,10 +95,10 @@ public class UserLinkController {
             );
         
             int totalPage = links.getTotalPages();
-            ApiResponse<UserWithResourcesResponse<PaginatedResponse<Link>>> response = new ApiResponse<>(
+            ApiResult<UserInfoWithResources<PaginatedData<Link>>> response = new ApiResult<>(
                 generatePaginatedResponse(
                     user,
-                    new PaginatedResponse<Link>(
+                    new PaginatedData<Link>(
                         totalPage,
                         paginatedRequest.getPageNumber(),
                         links.getContent()
@@ -106,7 +106,7 @@ public class UserLinkController {
                 ),
                 null
             );
-            return new ResponseEntity<ApiResponse<UserWithResourcesResponse<PaginatedResponse<Link>>>>(
+            return new ResponseEntity<ApiResult<UserInfoWithResources<PaginatedData<Link>>>>(
                 response,
                 HttpStatus.OK
             );
@@ -116,7 +116,7 @@ public class UserLinkController {
     }
     
     @GetMapping(path = "/{username}/paginated-sorted")
-    public ResponseEntity<ApiResponse<UserWithResourcesResponse<PaginatedResponse<Link>>>> getUserWithSortedPaginatedLinks(
+    public ResponseEntity<ApiResult<UserInfoWithResources<PaginatedData<Link>>>> getUserWithSortedPaginatedLinks(
         @Valid @NotBlank(message = "Username is mandatory!") 
         @PathVariable("username") String username,
         @Valid @NotNull @RequestParam(defaultValue = "5") String pageCount,
@@ -128,7 +128,7 @@ public class UserLinkController {
         if (existingUser.isPresent()) {
             User user = existingUser.get();
 
-            SortedPaginatedRequest paginatedRequest = new SortedPaginatedRequest(
+            SortedPaginatedArgs paginatedRequest = new SortedPaginatedArgs(
                 pageCount,
                 pageNumber,
                 order,
@@ -144,10 +144,10 @@ public class UserLinkController {
 
             int totalPage = links.getTotalPages();
 
-            ApiResponse<UserWithResourcesResponse<PaginatedResponse<Link>>> response = new ApiResponse<>(
+            ApiResult<UserInfoWithResources<PaginatedData<Link>>> response = new ApiResult<>(
                 generatePaginatedResponse(
                     user, 
-                    new PaginatedResponse<Link>(
+                    new PaginatedData<Link>(
                         totalPage,
                         paginatedRequest.getPageNumber(),
                         links.getContent()
@@ -155,7 +155,7 @@ public class UserLinkController {
                 ),
                 null
             );
-            return new ResponseEntity<ApiResponse<UserWithResourcesResponse<PaginatedResponse<Link>>>>(
+            return new ResponseEntity<ApiResult<UserInfoWithResources<PaginatedData<Link>>>>(
                 response,
                 HttpStatus.OK
             );
@@ -164,11 +164,11 @@ public class UserLinkController {
         }
     }
 
-    private <T> UserWithResourcesResponse<T> generatePaginatedResponse(
+    private <T> UserInfoWithResources<T> generatePaginatedResponse(
         User user,
         T resources
     ) {
-        return new UserWithResourcesResponse<T>(
+        return new UserInfoWithResources<T>(
             user.getId(),
             user.getUsername(),
             user.getEmail(),

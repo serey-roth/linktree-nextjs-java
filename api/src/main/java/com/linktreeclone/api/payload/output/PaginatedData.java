@@ -1,17 +1,17 @@
-package com.linktreeclone.api.payload.response;
+package com.linktreeclone.api.payload.output;
 
 import java.util.List;
 
-public class PaginatedResponse<T> {
+public class PaginatedData<T> {
     private int totalPages;
 
     private int currentPage;
 
     private List<T> data;
 
-    public PaginatedResponse() {}
+    public PaginatedData() {}
 
-    public PaginatedResponse(int totalPages, int currentPage, List<T> data) {
+    public PaginatedData(int totalPages, int currentPage, List<T> data) {
         this.totalPages = totalPages;
         this.currentPage = currentPage;
         this.data = data;

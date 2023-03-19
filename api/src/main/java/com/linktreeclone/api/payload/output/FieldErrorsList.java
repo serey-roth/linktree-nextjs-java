@@ -1,19 +1,19 @@
-package com.linktreeclone.api.payload.response;
+package com.linktreeclone.api.payload.output;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
 
-public class MultipleErrorResponse extends ErrorResponse {
+public class FieldErrorsList extends Error {
     private List<FieldError> errors;
 
-    public MultipleErrorResponse() {
+    public FieldErrorsList() {
         super();
         this.errors = new ArrayList<>();
     }
 
-    public MultipleErrorResponse(
+    public FieldErrorsList(
         HttpStatus status,
         String errorCode,
         String message,

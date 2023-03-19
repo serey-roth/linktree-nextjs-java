@@ -1,11 +1,11 @@
-package com.linktreeclone.api.payload.request;
+package com.linktreeclone.api.payload.input;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
-public class AuthRequest {
+public class UsernamePassword {
     @NotBlank(message = "Username is mandatory!")
     private String username;
 
@@ -13,9 +13,9 @@ public class AuthRequest {
     @Size(min = 6, max = 18, message = "Password length must be 6 and 18 characters long!" )
     private String password;
 
-    public AuthRequest() {}
+    public UsernamePassword() {}
 
-    public AuthRequest(
+    public UsernamePassword(
         @JsonProperty("username") String username,
         @JsonProperty("password") String password
     ) {

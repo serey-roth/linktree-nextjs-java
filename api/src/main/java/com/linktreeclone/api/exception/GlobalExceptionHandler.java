@@ -17,11 +17,11 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
-import com.linktreeclone.api.payload.response.ApiResponse;
-import com.linktreeclone.api.payload.response.ErrorResponse;
-import com.linktreeclone.api.payload.response.FieldError;
-import com.linktreeclone.api.payload.response.MultipleErrorResponse;
-import com.linktreeclone.api.payload.response.UserResponse;
+import com.linktreeclone.api.payload.output.ApiResult;
+import com.linktreeclone.api.payload.output.Error;
+import com.linktreeclone.api.payload.output.FieldError;
+import com.linktreeclone.api.payload.output.FieldErrorsList;
+import com.linktreeclone.api.payload.output.UserInfo;
 
 @Order(Ordered.HIGHEST_PRECEDENCE)
 @ControllerAdvice
@@ -29,19 +29,19 @@ import com.linktreeclone.api.payload.response.UserResponse;
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     
     @ExceptionHandler(NotFoundException.class)
-    public ResponseEntity<ApiResponse<UserResponse>> handleNotFoundException(
+    public ResponseEntity<ApiResult<UserInfo>> handleNotFoundException(
         NotFoundException e,
         WebRequest request
     ) throws Exception {
         try {
-            ErrorResponse errorResponse = new ErrorResponse(
+            Error errorResponse = new Error(
                 HttpStatus.NOT_FOUND,
                 "404",
                 e.getMessage(),
                 e.getDetails()
             );
-            return new ResponseEntity<ApiResponse<UserResponse>>(
-                new ApiResponse<UserResponse>(
+            return new ResponseEntity<ApiResult<UserInfo>>(
+                new ApiResult<UserInfo>(
                     null, 
                     errorResponse
                 ), HttpStatus.OK
@@ -52,19 +52,19 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     @ExceptionHandler(CredentialsTakenException.class)
-    public ResponseEntity<ApiResponse<UserResponse>> handleCredentialsTakenException(
+    public ResponseEntity<ApiResult<UserInfo>> handleCredentialsTakenException(
         CredentialsTakenException e,
         WebRequest request
     ) throws Exception {
         try {
-            ErrorResponse errorResponse = new ErrorResponse(
+            Error errorResponse = new Error(
                 HttpStatus.BAD_REQUEST,
                 "400",
                 e.getMessage(),
                 e.getDetails()
             );
-            return new ResponseEntity<ApiResponse<UserResponse>>(
-                new ApiResponse<UserResponse>(
+            return new ResponseEntity<ApiResult<UserInfo>>(
+                new ApiResult<UserInfo>(
                     null, 
                     errorResponse
                 ), HttpStatus.OK
@@ -75,19 +75,19 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     @ExceptionHandler(MissingRequestHeaderException.class)
-    public ResponseEntity<ApiResponse<UserResponse>> handleMissingRequestHeaderException(
+    public ResponseEntity<ApiResult<UserInfo>> handleMissingRequestHeaderException(
         MissingRequestHeaderException e,
         WebRequest request
     ) throws Exception {
         try {
-            ErrorResponse errorResponse = new ErrorResponse(
+            Error errorResponse = new Error(
                 HttpStatus.BAD_REQUEST,
                 "400",
                 e.getMessage(),
                 e.getBody().getDetail()
             );
-            return new ResponseEntity<ApiResponse<UserResponse>>(
-                new ApiResponse<UserResponse>(
+            return new ResponseEntity<ApiResult<UserInfo>>(
+                new ApiResult<UserInfo>(
                     null, 
                     errorResponse
                 ), HttpStatus.OK
@@ -116,7 +116,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                 })
                 .collect(Collectors.toList());
 
-        MultipleErrorResponse errorResponse = new MultipleErrorResponse(
+        FieldErrorsList errorResponse = new FieldErrorsList(
             HttpStatus.BAD_REQUEST, 
             "400",
             ex.getLocalizedMessage(),
@@ -124,7 +124,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
             errorList
         );
 
-        ApiResponse<UserResponse> response = new ApiResponse<UserResponse>(
+        ApiResult<UserInfo> response = new ApiResult<UserInfo>(
             null,
             errorResponse
         );
