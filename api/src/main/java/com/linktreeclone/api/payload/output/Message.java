@@ -1,9 +1,9 @@
-package com.linktreeclone.api.payload.response;
+package com.linktreeclone.api.payload.output;
 
-public class MessageResponse {
+public class Message {
     private String message;
   
-    public MessageResponse(String message) {
+    public Message(String message) {
       this.message = message;
     }
   
