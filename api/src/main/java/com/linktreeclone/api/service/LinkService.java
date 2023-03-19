@@ -5,11 +5,12 @@ import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 
 import com.linktreeclone.api.dao.LinkDao;
 import com.linktreeclone.api.model.Link;
+import com.linktreeclone.api.payload.input.PaginatedArgs;
+import com.linktreeclone.api.payload.input.SortedPaginatedArgs;
 import com.linktreeclone.api.payload.output.PaginatedData;
 
 @Service
@@ -20,7 +21,7 @@ public class LinkService {
 
     private final PaginationService<Link> paginationService;
 
-    public LinkService(@Qualifier("postgres") LinkDao linkDao) {
+    public LinkService(@Qualifier("postgres-link") LinkDao linkDao) {
         this.linkDao = linkDao;
         this.paginationService = new PaginationService<>(linkDao);
     }
@@ -32,9 +33,13 @@ public class LinkService {
     public Optional<Link> selectLinkById(Long id) {
         return linkDao.selectLinkById(id);
     }
+
+    public List<Link> selectAllLinks() {
+        return linkDao.selectAllLinks();
+    }
     
     public List<Link> selectAllLinksByCreatorId(Long creatorId) {
-        return linkDao.selectAllItemsByCreatorId(creatorId);
+        return linkDao.selectAllLinksByCreatorId(creatorId);
     }
     
     public boolean deleteLinkById(Long id) {
@@ -47,29 +52,21 @@ public class LinkService {
 
     public PaginatedData<Link> selectPaginatedLinksByCreatorId(
         Long creatorId, 
-        int pageCount, 
-        int pageNumber
+        PaginatedArgs paginatedArgs
     ) {
         return paginationService.selectPaginatedItemsByCreatorId(
             creatorId, 
-            pageCount, 
-            pageNumber
+            paginatedArgs
         );
     }
 
     public PaginatedData<Link> selectPaginatedSortedLinksByCreatorId(
         Long creatorId, 
-        int pageCount, 
-        int pageNumber,
-        String sortKey, 
-        Direction order
+        SortedPaginatedArgs paginatedArgs
     ) {
         return paginationService.selectPaginatedSortedItemsByCreatorId(
             creatorId, 
-            pageCount, 
-            pageNumber, 
-            sortKey, 
-            order
+            paginatedArgs
         );
     }
 }
