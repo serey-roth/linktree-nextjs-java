@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Primary;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -14,6 +15,7 @@ import com.linktreeclone.api.payload.input.PaginatedArgs;
 import com.linktreeclone.api.payload.input.SortedPaginatedArgs;
 import com.linktreeclone.api.repository.LinkRepository;
 
+@Primary
 @Repository("postgres-link")
 public class LinkDaoImpl implements LinkDao {
 
