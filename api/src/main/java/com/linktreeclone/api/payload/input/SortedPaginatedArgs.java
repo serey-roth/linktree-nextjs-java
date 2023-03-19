@@ -1,4 +1,4 @@
-package com.linktreeclone.api.payload.request;
+package com.linktreeclone.api.payload.input;
 
 import java.util.Objects;
 
@@ -6,15 +6,15 @@ import org.springframework.data.domain.Sort.Direction;
 
 import jakarta.validation.constraints.NotBlank;
 
-public class SortedPaginatedRequest extends PaginatedRequest {
+public class SortedPaginatedArgs extends PaginatedArgs {
     private Direction order;
 
     @NotBlank(message = "Sorting key is mandatory")
     private String sortKey;
 
-    public SortedPaginatedRequest() {};
+    public SortedPaginatedArgs() {};
 
-    public SortedPaginatedRequest(
+    public SortedPaginatedArgs(
         String pageCount, 
         String pageNumber, 
         Direction order, 
@@ -41,12 +41,12 @@ public class SortedPaginatedRequest extends PaginatedRequest {
         this.sortKey = sortKey;
     }
 
-    public SortedPaginatedRequest order(Direction order) {
+    public SortedPaginatedArgs order(Direction order) {
         setOrder(order);
         return this;
     }
 
-    public SortedPaginatedRequest sortKey(String sortKey) {
+    public SortedPaginatedArgs sortKey(String sortKey) {
         setSortKey(sortKey);
         return this;
     }
@@ -55,10 +55,10 @@ public class SortedPaginatedRequest extends PaginatedRequest {
     public boolean equals(Object o) {
         if (o == this)
             return true;
-        if (!(o instanceof SortedPaginatedRequest)) {
+        if (!(o instanceof SortedPaginatedArgs)) {
             return false;
         }
-        SortedPaginatedRequest sortedPaginatedRequest = (SortedPaginatedRequest) o;
+        SortedPaginatedArgs sortedPaginatedRequest = (SortedPaginatedArgs) o;
         return Objects.equals(order, sortedPaginatedRequest.order) && Objects.equals(sortKey, sortedPaginatedRequest.sortKey);
     }
 
