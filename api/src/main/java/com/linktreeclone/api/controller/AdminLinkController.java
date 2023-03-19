@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -73,22 +72,14 @@ public class AdminLinkController {
         PaginatedArgs paginatedRequest = new PaginatedArgs(pageCount, pageNumber);
         Long creatorId = userDetails.getId();
 
-        Page<Link> links = linkService.selectPaginatedLinksByCreatorId(
+        PaginatedData<Link> links = linkService.selectPaginatedLinksByCreatorId(
             creatorId, 
             paginatedRequest.getPageCount(), 
             paginatedRequest.getPageNumber()
         );
-        
-        int totalPage = links.getTotalPages();
 
         return new ResponseEntity<ApiResult<PaginatedData<Link>>>(
-            new ApiResult<PaginatedData<Link>>(
-                new PaginatedData<Link>(
-                    totalPage,
-                    paginatedRequest.getPageNumber(),
-                    links.getContent()
-                ), null
-            ), 
+            new ApiResult<PaginatedData<Link>>(links, null), 
             HttpStatus.OK
         );
     }
@@ -107,9 +98,10 @@ public class AdminLinkController {
             order,
             sortKey
         );
+
         Long creatorId = userDetails.getId();
         
-        Page<Link> links = linkService.selectPaginatedSortedLinksByCreatorId(
+        PaginatedData<Link> links = linkService.selectPaginatedSortedLinksByCreatorId(
             creatorId, 
             paginatedRequest.getPageCount(), 
             paginatedRequest.getPageNumber(),
@@ -117,16 +109,8 @@ public class AdminLinkController {
             paginatedRequest.getOrder()
         );
 
-        int totalPage = links.getTotalPages();
-
         return new ResponseEntity<ApiResult<PaginatedData<Link>>>(
-            new ApiResult<PaginatedData<Link>>(
-                new PaginatedData<Link>(
-                    totalPage,
-                    paginatedRequest.getPageNumber(),
-                    links.getContent()
-                ), null
-            ), 
+            new ApiResult<PaginatedData<Link>>(links, null), 
             HttpStatus.OK
         );
     }
