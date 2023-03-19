@@ -7,17 +7,22 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Repository;
 
 import com.linktreeclone.api.model.Link;
+import com.linktreeclone.api.payload.input.PaginatedArgs;
+import com.linktreeclone.api.payload.input.SortedPaginatedArgs;
 import com.linktreeclone.api.repository.LinkRepository;
 
-@Repository("postgres")
-public class LinkDaoPostgresImpl implements LinkDao {
+@Repository("postgres-link")
+public class LinkDaoImpl implements LinkDao {
 
     @Autowired
     LinkRepository linkRepository;
+
+    public List<Link> selectAllLinks() {
+        return linkRepository.findAll();
+    }
 
     @Override
     public boolean addLink(Link link) {
@@ -31,7 +36,7 @@ public class LinkDaoPostgresImpl implements LinkDao {
     }
 
     @Override
-    public List<Link> selectAllItemsByCreatorId(Long creatorId) {
+    public List<Link> selectAllLinksByCreatorId(Long creatorId) {
         return linkRepository.findAllByCreatorId(creatorId);
     }
 
@@ -62,28 +67,41 @@ public class LinkDaoPostgresImpl implements LinkDao {
     }
 
     @Override
-    public Page<Link> selectPaginatedItemsByCreatorId(
+    public Page<Link> selectPaginatedItemsByIdentifier(
         Long creatorId, 
-        int pageCount, 
-        int pageNumber
+        PaginatedArgs args
     ) {
-        Pageable page = PageRequest.of(pageNumber, pageCount);
+        Pageable page = PageRequest.of(args.getPageNumber(), args.getPageCount());
         return linkRepository.findAllByCreatorId(creatorId, page);
     }
 
     @Override
-    public Page<Link> selectPaginatedSortedItemsByCreatorId(
+    public Page<Link> selectPaginatedSortedItemsByIdentifier(
         Long creatorId, 
-        int pageCount, 
-        int pageNumber,
-        String sortKey, 
-        Direction order
+        SortedPaginatedArgs args
     ) {
         Pageable page = PageRequest.of(
-            pageNumber, 
-            pageCount
-        ).withSort(order, sortKey);
+            args.getPageNumber(), 
+            args.getPageCount()
+        ).withSort(args.getOrder(), args.getSortKey());
         return linkRepository.findAllByCreatorId(creatorId, page);
+    }
+
+    @Override
+    public Page<Link> selectPaginatedItems(PaginatedArgs args) {
+        Pageable page = PageRequest.of(args.getPageNumber(), args.getPageCount());
+        return linkRepository.findAll(page);
+    }
+
+    @Override
+    public Page<Link> selectPaginatedSortedItems(
+        SortedPaginatedArgs args
+    ) {
+        Pageable page = PageRequest.of(
+            args.getPageNumber(), 
+            args.getPageCount()
+        ).withSort(args.getOrder(), args.getSortKey());
+        return linkRepository.findAll(page);
     }
     
 }
