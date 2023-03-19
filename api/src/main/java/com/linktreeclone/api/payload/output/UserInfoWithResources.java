@@ -1,12 +1,12 @@
-package com.linktreeclone.api.payload.response;
+package com.linktreeclone.api.payload.output;
 
 import java.util.List;
 
-public class UserWithResourcesResponse<T> extends UserResponse {
+public class UserInfoWithResources<T> extends UserInfo {
 
     private T resources;
 
-    public UserWithResourcesResponse(
+    public UserInfoWithResources(
         Long id,
         String username,
         String email,
