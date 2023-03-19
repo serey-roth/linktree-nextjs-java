@@ -1,61 +1,79 @@
 package com.linktreeclone.api.service;
 
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 
-import com.linktreeclone.api.dao.Dao;
+import com.linktreeclone.api.dao.IdentifiedPaginationDao;
+import com.linktreeclone.api.dao.PaginationDao;
+import com.linktreeclone.api.payload.input.PaginatedArgs;
+import com.linktreeclone.api.payload.input.SortedPaginatedArgs;
 import com.linktreeclone.api.payload.output.PaginatedData;
 
 @Service
-public class PaginationService<T> {
+public class PaginationService<TData> {
     
-    private final Dao<T> dao;
+    private final PaginationDao<TData> dao;
 
-    public PaginationService(Dao<T> dao) {
+    public PaginationService(PaginationDao<TData> dao) {
         this.dao = dao;
     }
 
-    public PaginatedData<T> selectPaginatedItemsByCreatorId(
-        Long creatorId, 
-        int pageCount, 
-        int pageNumber
-    ) {
-        Page<T> items = dao.selectPaginatedItemsByCreatorId(
-            creatorId, 
-            pageCount, 
-            pageNumber
-        );
+    public PaginatedData<TData> selectPaginatedItems(PaginatedArgs paginatedArgs) {
+        Page<TData> items =  dao.selectPaginatedItems(paginatedArgs);
 
         int totalPage = items.getTotalPages();
 
-        return new PaginatedData<T>(
+        return new PaginatedData<TData>(
             totalPage,
-            pageNumber,
+            paginatedArgs.getPageNumber(),
             items.getContent()
         );
     }
 
-    public PaginatedData<T> selectPaginatedSortedItemsByCreatorId(
+    public PaginatedData<TData> selectPaginatedSortedItems(SortedPaginatedArgs paginatedArgs) {
+        Page<TData> items = dao.selectPaginatedSortedItems(paginatedArgs);
+
+        int totalPage = items.getTotalPages();
+
+        return new PaginatedData<TData>(
+            totalPage,
+            paginatedArgs.getPageNumber(),
+            items.getContent()
+        );
+    }
+
+    public PaginatedData<TData> selectPaginatedItemsByCreatorId(
         Long creatorId, 
-        int pageCount, 
-        int pageNumber,
-        String sortKey, 
-        Direction order
+        PaginatedArgs paginatedArgs
     ) {
-        Page<T> items = dao.selectPaginatedSortedItemsByCreatorId(
+        Page<TData> items =  ((IdentifiedPaginationDao<TData>) dao).selectPaginatedItemsByIdentifier(
             creatorId, 
-            pageCount, 
-            pageNumber, 
-            sortKey, 
-            order
+            paginatedArgs
         );
 
         int totalPage = items.getTotalPages();
 
-        return new PaginatedData<T>(
+        return new PaginatedData<TData>(
             totalPage,
-            pageNumber,
+            paginatedArgs.getPageNumber(),
+            items.getContent()
+        );
+    }
+
+    public PaginatedData<TData> selectPaginatedSortedItemsByCreatorId(
+        Long creatorId, 
+        SortedPaginatedArgs paginatedArgs
+    ) {
+        Page<TData> items = ((IdentifiedPaginationDao<TData>) dao).selectPaginatedSortedItemsByIdentifier(
+            creatorId, 
+            paginatedArgs
+        );
+
+        int totalPage = items.getTotalPages();
+
+        return new PaginatedData<TData>(
+            totalPage,
+            paginatedArgs.getPageNumber(),
             items.getContent()
         );
     }
