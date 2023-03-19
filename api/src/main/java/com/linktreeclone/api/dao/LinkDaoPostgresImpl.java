@@ -31,7 +31,7 @@ public class LinkDaoPostgresImpl implements LinkDao {
     }
 
     @Override
-    public List<Link> selectAllLinksByCreatorId(Long creatorId) {
+    public List<Link> selectAllItemsByCreatorId(Long creatorId) {
         return linkRepository.findAllByCreatorId(creatorId);
     }
 
@@ -62,7 +62,7 @@ public class LinkDaoPostgresImpl implements LinkDao {
     }
 
     @Override
-    public Page<Link> selectPaginatedLinksByCreatorId(
+    public Page<Link> selectPaginatedItemsByCreatorId(
         Long creatorId, 
         int pageCount, 
         int pageNumber
@@ -72,7 +72,7 @@ public class LinkDaoPostgresImpl implements LinkDao {
     }
 
     @Override
-    public Page<Link> selectPaginatedSortedLinksByCreatorId(
+    public Page<Link> selectPaginatedSortedItemsByCreatorId(
         Long creatorId, 
         int pageCount, 
         int pageNumber,
