@@ -5,7 +5,6 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -88,22 +87,14 @@ public class UserLinkController {
             User user = existingUser.get();
 
             PaginatedArgs paginatedRequest = new PaginatedArgs(pageCount, pageNumber);
-            Page<Link> links = linkService.selectPaginatedLinksByCreatorId(
+            PaginatedData<Link> links = linkService.selectPaginatedLinksByCreatorId(
                 user.getId(), 
                 paginatedRequest.getPageCount(), 
                 paginatedRequest.getPageNumber()
             );
         
-            int totalPage = links.getTotalPages();
             ApiResult<UserInfoWithResources<PaginatedData<Link>>> response = new ApiResult<>(
-                generatePaginatedResponse(
-                    user,
-                    new PaginatedData<Link>(
-                        totalPage,
-                        paginatedRequest.getPageNumber(),
-                        links.getContent()
-                    )
-                ),
+                generatePaginatedResponse(user, links),
                 null
             );
             return new ResponseEntity<ApiResult<UserInfoWithResources<PaginatedData<Link>>>>(
@@ -134,7 +125,8 @@ public class UserLinkController {
                 order,
                 sortKey
             );
-            Page<Link> links = linkService.selectPaginatedSortedLinksByCreatorId(
+
+            PaginatedData<Link> links = linkService.selectPaginatedSortedLinksByCreatorId(
                 user.getId(), 
                 paginatedRequest.getPageCount(), 
                 paginatedRequest.getPageNumber(),
@@ -142,17 +134,8 @@ public class UserLinkController {
                 paginatedRequest.getOrder()
             );
 
-            int totalPage = links.getTotalPages();
-
             ApiResult<UserInfoWithResources<PaginatedData<Link>>> response = new ApiResult<>(
-                generatePaginatedResponse(
-                    user, 
-                    new PaginatedData<Link>(
-                        totalPage,
-                        paginatedRequest.getPageNumber(),
-                        links.getContent()
-                    )
-                ),
+                generatePaginatedResponse(user, links),
                 null
             );
             return new ResponseEntity<ApiResult<UserInfoWithResources<PaginatedData<Link>>>>(
