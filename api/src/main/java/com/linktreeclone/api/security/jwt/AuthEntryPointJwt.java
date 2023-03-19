@@ -14,9 +14,9 @@ import org.springframework.stereotype.Component;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.linktreeclone.api.payload.response.ApiResponse;
-import com.linktreeclone.api.payload.response.ErrorResponse;
-import com.linktreeclone.api.payload.response.JwtResponse;
+import com.linktreeclone.api.payload.output.ApiResult;
+import com.linktreeclone.api.payload.output.Error;
+import com.linktreeclone.api.payload.output.UserInfoWithJwt;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -27,8 +27,8 @@ public class AuthEntryPointJwt implements AuthenticationEntryPoint {
 
     private static final Logger logger = LoggerFactory.getLogger(AuthEntryPointJwt.class);
     
-    private ErrorResponse createErrorReponse(AuthenticationException authException) {
-        ErrorResponse errorResponse = new ErrorResponse();
+    private Error createErrorReponse(AuthenticationException authException) {
+        Error errorResponse = new Error();
         if (authException instanceof BadCredentialsException) {
             errorResponse.setHttpStatus(HttpStatus.NOT_FOUND);
             errorResponse.setErrorCode("404");
@@ -49,7 +49,7 @@ public class AuthEntryPointJwt implements AuthenticationEntryPoint {
         AuthenticationException authException) throws IOException, ServletException {
         logger.error("Unauthorized error: {}", authException.getMessage());
         try {
-            ApiResponse<JwtResponse> res = new ApiResponse<JwtResponse>(null, createErrorReponse(authException));
+            ApiResult<UserInfoWithJwt> res = new ApiResult<UserInfoWithJwt>(null, createErrorReponse(authException));
             response.setStatus(HttpStatus.OK.value());
             response.setContentType("application/json");
             response.setCharacterEncoding("UTF-8");

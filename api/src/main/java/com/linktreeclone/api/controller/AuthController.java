@@ -29,11 +29,11 @@ import com.linktreeclone.api.exception.NotFoundException;
 import com.linktreeclone.api.model.ERole;
 import com.linktreeclone.api.model.Role;
 import com.linktreeclone.api.model.User;
-import com.linktreeclone.api.payload.request.AuthRequest;
-import com.linktreeclone.api.payload.request.RegisterRequest;
-import com.linktreeclone.api.payload.response.ApiResponse;
-import com.linktreeclone.api.payload.response.MessageResponse;
-import com.linktreeclone.api.payload.response.UserResponse;
+import com.linktreeclone.api.payload.input.UsernameEmailPassword;
+import com.linktreeclone.api.payload.input.UsernamePassword;
+import com.linktreeclone.api.payload.output.ApiResult;
+import com.linktreeclone.api.payload.output.Message;
+import com.linktreeclone.api.payload.output.UserInfo;
 import com.linktreeclone.api.repository.RoleRepository;
 import com.linktreeclone.api.repository.UserRepository;
 import com.linktreeclone.api.security.jwt.JwtUtils;
@@ -63,7 +63,7 @@ public class AuthController {
     JwtUtils jwtUtils;
 
 	@GetMapping("/me")
-	public ResponseEntity<ApiResponse<UserResponse>> me(
+	public ResponseEntity<ApiResult<UserInfo>> me(
 		@Valid @NotNull @RequestHeader("Authorization") String bearerToken
 	) throws RuntimeException {
 		String token = bearerToken.substring(7);
@@ -79,9 +79,9 @@ public class AuthController {
 					.stream()
 					.map(role -> role.getName().toString())
 					.toList();
-				return new ResponseEntity<ApiResponse<UserResponse>>(
-					new ApiResponse<UserResponse>(
-						new UserResponse(
+				return new ResponseEntity<ApiResult<UserInfo>>(
+					new ApiResult<UserInfo>(
+						new UserInfo(
 							user.getId(), 
 							user.getUsername(),
 							user.getEmail(),
@@ -100,7 +100,7 @@ public class AuthController {
 	}
 
     @PostMapping("/login")
-    public ResponseEntity<ApiResponse<UserResponse>> loginUser(@Valid @RequestBody AuthRequest loginRequest) {
+    public ResponseEntity<ApiResult<UserInfo>> loginUser(@Valid @RequestBody UsernamePassword loginRequest) {
         Authentication auth = authManager.authenticate(
             new UsernamePasswordAuthenticationToken(
                 loginRequest.getUsername(), 
@@ -121,8 +121,8 @@ public class AuthController {
 
 		return ResponseEntity.ok()
 		.header(HttpHeaders.SET_COOKIE, jwtCookie.toString())
-		.body(new ApiResponse<UserResponse>(
-			new UserResponse(
+		.body(new ApiResult<UserInfo>(
+			new UserInfo(
 				userDetails.getId(), 
 				userDetails.getUsername(), 
 				userDetails.getEmail(), 
@@ -145,8 +145,8 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-	public ResponseEntity<ApiResponse<MessageResponse>> registerUser(
-		@Valid @RequestBody RegisterRequest registerRequest
+	public ResponseEntity<ApiResult<Message>> registerUser(
+		@Valid @RequestBody UsernameEmailPassword registerRequest
 	) throws CredentialsTakenException {
 		if (userRepository.existsByUsername(registerRequest.getUsername())) {
 			throw new CredentialsTakenException("Credentials taken!", "Username is already taken!");
@@ -189,9 +189,9 @@ public class AuthController {
 		user.setRoles(roles);
 		userRepository.save(user);
 
-		return new ResponseEntity<ApiResponse<MessageResponse>>(
-			new ApiResponse<MessageResponse>(
-				new MessageResponse("User registered successfully!"),
+		return new ResponseEntity<ApiResult<Message>>(
+			new ApiResult<Message>(
+				new Message("User registered successfully!"),
 				null
 			),
 			HttpStatus.OK
@@ -199,12 +199,12 @@ public class AuthController {
 	}
 
 	@PostMapping("/logout")
-	public ResponseEntity<ApiResponse<MessageResponse>> logout() {
+	public ResponseEntity<ApiResult<Message>> logout() {
 		ResponseCookie cookie = jwtUtils.getCleanJwtCookie();
 		return ResponseEntity.ok()
 		.header(HttpHeaders.SET_COOKIE, cookie.toString())
-		.body(new ApiResponse<MessageResponse>(
-			new MessageResponse("You've been loggged out!"), 
+		.body(new ApiResult<Message>(
+			new Message("You've been loggged out!"), 
 			null
 		));
 	}

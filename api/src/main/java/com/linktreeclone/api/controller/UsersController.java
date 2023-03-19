@@ -17,9 +17,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.linktreeclone.api.model.User;
-import com.linktreeclone.api.payload.response.ApiResponse;
-import com.linktreeclone.api.payload.response.PaginatedResponse;
-import com.linktreeclone.api.payload.response.UserResponse;
+import com.linktreeclone.api.payload.output.ApiResult;
+import com.linktreeclone.api.payload.output.PaginatedData;
+import com.linktreeclone.api.payload.output.UserInfo;
 import com.linktreeclone.api.repository.UserRepository;
 
 import jakarta.validation.Valid;
@@ -39,11 +39,11 @@ public class UsersController {
      * @throws RuntimeException
      */
     @GetMapping
-    public ResponseEntity<ApiResponse<List<UserResponse>>> getAllUsers() {
+    public ResponseEntity<ApiResult<List<UserInfo>>> getAllUsers() {
         List<User> users = userRepository.findAll();
-        return new ResponseEntity<ApiResponse<List<UserResponse>>>(
-            new ApiResponse<List<UserResponse>>(
-                users.stream().map(user -> new UserResponse(
+        return new ResponseEntity<ApiResult<List<UserInfo>>>(
+            new ApiResult<List<UserInfo>>(
+                users.stream().map(user -> new UserInfo(
                     user.getId(), 
                     user.getUsername(), 
                     user.getEmail(), 
@@ -59,19 +59,19 @@ public class UsersController {
     }
 
     @GetMapping(path = "/paginated")
-    public ResponseEntity<ApiResponse<PaginatedResponse<UserResponse>>> getPaginatedUsers(
+    public ResponseEntity<ApiResult<PaginatedData<UserInfo>>> getPaginatedUsers(
         @Valid @NotNull @RequestParam(defaultValue = "5") String pageCount,
         @Valid @NotNull @RequestParam(defaultValue = "0") String pageNumber
     ) {
         Pageable page = PageRequest.of(Integer.parseInt(pageNumber), Integer.parseInt(pageCount));
         Page<User> users = userRepository.findAll(page);
 
-        return new ResponseEntity<ApiResponse<PaginatedResponse<UserResponse>>>(
-            new ApiResponse<PaginatedResponse<UserResponse>>(
-                new PaginatedResponse<>(
+        return new ResponseEntity<ApiResult<PaginatedData<UserInfo>>>(
+            new ApiResult<PaginatedData<UserInfo>>(
+                new PaginatedData<>(
                     users.getTotalPages(), 
                     page.getPageNumber(), 
-                    users.getContent().stream().map(user -> new UserResponse(
+                    users.getContent().stream().map(user -> new UserInfo(
                         user.getId(), 
                         user.getUsername(), 
                         user.getEmail(), 
@@ -87,7 +87,7 @@ public class UsersController {
     }
     
     @GetMapping(path = "/paginated-sorted")
-    public ResponseEntity<ApiResponse<PaginatedResponse<UserResponse>>> getSortedPaginatedUsers(
+    public ResponseEntity<ApiResult<PaginatedData<UserInfo>>> getSortedPaginatedUsers(
         @Valid @NotNull @RequestParam(defaultValue = "5") String pageCount,
         @Valid @NotNull @RequestParam(defaultValue = "1") String pageNumber,
         @Valid @NotNull @RequestParam String sortKey,
@@ -99,12 +99,12 @@ public class UsersController {
         ).withSort(order, sortKey);
         Page<User> users = userRepository.findAll(page);
 
-        return new ResponseEntity<ApiResponse<PaginatedResponse<UserResponse>>>(
-            new ApiResponse<PaginatedResponse<UserResponse>>(
-                new PaginatedResponse<>(
+        return new ResponseEntity<ApiResult<PaginatedData<UserInfo>>>(
+            new ApiResult<PaginatedData<UserInfo>>(
+                new PaginatedData<>(
                     users.getTotalPages(), 
                     page.getPageNumber(), 
-                    users.getContent().stream().map(user -> new UserResponse(
+                    users.getContent().stream().map(user -> new UserInfo(
                         user.getId(), 
                         user.getUsername(), 
                         user.getEmail(), 
