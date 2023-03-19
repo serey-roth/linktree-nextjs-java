@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import com.linktreeclone.api.dao.LinkDao;
 import com.linktreeclone.api.model.Link;
+import com.linktreeclone.api.payload.output.PaginatedData;
 
 @Service
 public class LinkService {
@@ -42,21 +43,47 @@ public class LinkService {
         return linkDao.updateLinkById(id, newLink);
     }
 
-    public Page<Link> selectPaginatedLinksByCreatorId(
+    public PaginatedData<Link> selectPaginatedLinksByCreatorId(
         Long creatorId, 
         int pageCount, 
         int pageNumber
     ) {
-        return linkDao.selectPaginatedLinksByCreatorId(creatorId, pageCount, pageNumber);
+        Page<Link> links = linkDao.selectPaginatedLinksByCreatorId(
+            creatorId, 
+            pageCount, 
+            pageNumber
+        );
+
+        int totalPage = links.getTotalPages();
+
+        return new PaginatedData<Link>(
+            totalPage,
+            pageNumber,
+            links.getContent()
+        );
     }
 
-    public Page<Link> selectPaginatedSortedLinksByCreatorId(
+    public PaginatedData<Link> selectPaginatedSortedLinksByCreatorId(
         Long creatorId, 
         int pageCount, 
         int pageNumber,
         String sortKey, 
         Direction order
     ) {
-        return linkDao.selectPaginatedSortedLinksByCreatorId(creatorId, pageCount, pageNumber, sortKey, order);
+        Page<Link> links = linkDao.selectPaginatedSortedLinksByCreatorId(
+            creatorId, 
+            pageCount, 
+            pageNumber, 
+            sortKey, 
+            order
+        );
+
+        int totalPage = links.getTotalPages();
+
+        return new PaginatedData<Link>(
+            totalPage,
+            pageNumber,
+            links.getContent()
+        );
     }
 }
