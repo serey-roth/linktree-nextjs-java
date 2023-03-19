@@ -5,7 +5,6 @@ import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 
@@ -19,8 +18,11 @@ public class LinkService {
     @Autowired
     private final LinkDao linkDao;
 
+    private final PaginationService<Link> paginationService;
+
     public LinkService(@Qualifier("postgres") LinkDao linkDao) {
         this.linkDao = linkDao;
+        this.paginationService = new PaginationService<>(linkDao);
     }
 
     public boolean addLink(Link link) {
@@ -32,7 +34,7 @@ public class LinkService {
     }
     
     public List<Link> selectAllLinksByCreatorId(Long creatorId) {
-        return linkDao.selectAllLinksByCreatorId(creatorId);
+        return linkDao.selectAllItemsByCreatorId(creatorId);
     }
     
     public boolean deleteLinkById(Long id) {
@@ -48,18 +50,10 @@ public class LinkService {
         int pageCount, 
         int pageNumber
     ) {
-        Page<Link> links = linkDao.selectPaginatedLinksByCreatorId(
+        return paginationService.selectPaginatedItemsByCreatorId(
             creatorId, 
             pageCount, 
             pageNumber
-        );
-
-        int totalPage = links.getTotalPages();
-
-        return new PaginatedData<Link>(
-            totalPage,
-            pageNumber,
-            links.getContent()
         );
     }
 
@@ -70,20 +64,12 @@ public class LinkService {
         String sortKey, 
         Direction order
     ) {
-        Page<Link> links = linkDao.selectPaginatedSortedLinksByCreatorId(
+        return paginationService.selectPaginatedSortedItemsByCreatorId(
             creatorId, 
             pageCount, 
             pageNumber, 
             sortKey, 
             order
-        );
-
-        int totalPage = links.getTotalPages();
-
-        return new PaginatedData<Link>(
-            totalPage,
-            pageNumber,
-            links.getContent()
         );
     }
 }
