@@ -1,19 +1,19 @@
-package com.linktreeclone.api.payload.request;
+package com.linktreeclone.api.payload.input;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import jakarta.validation.constraints.Min;
 
-public class PaginatedRequest {
+public class PaginatedArgs {
     @Min(value = 1L, message = "Page size must be at least 1!")
     private int pageCount;
 
     @Min(value = 1L, message = "Page number must be at least 1!")
     private int pageNumber;
 
-    public PaginatedRequest() {};
+    public PaginatedArgs() {};
 
-    public PaginatedRequest(
+    public PaginatedArgs(
         @JsonProperty("pageCount") String pageCount, 
         @JsonProperty("pageNumber") String pageNumber
     ) {
